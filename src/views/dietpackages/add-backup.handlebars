@@ -1,0 +1,239 @@
+{{> header}}
+<!-- Main Content -->
+<main class="body-content">
+    <div class="ms-content-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ms-panel">
+                    <div class="ms-panel-header row ms-panel-custom">
+                        <a>
+                            <h6> Add Dietpackages </h6>
+                        </a>
+                        <a href="{{baseUrl}}admin/dietpackages" class="btn btn-pill btn-primary text-right">Manage
+                            Dietpackages</a>
+
+                    </div>
+                    <div class="ms-panel-body">
+                        {{!-- <p class="ms-directions">Use <code>.validation-fill</code> in
+                            <code>.needs-validation</code>
+                        </p> --}}
+                        <form id="add_faq" enctype="multipart/form-data">
+                            <div class="form-row row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="title">Title</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="title" placeholder="Title..."
+                                            required="">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 mb-3">
+                                    <label for="description">Description</label>
+                                    <div class="input-group">
+                                        <textarea type="text" class="form-control" id="description"
+                                            placeholder="Description ...."></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="price">Price</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="price" placeholder="Price..."
+                                            required="">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="duration_days">Duration Days</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="duration_days"
+                                            placeholder="Duration_days..." required="">
+                                    </div>
+                                </div>
+                                <div id="meal-fields" class="row">
+                                    <div class="meal-group col-md-12 mb-3">
+                                        <h6>Add Diet </h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Day</label>
+                                                <input type="number" name="meals[0][day]" class="form-control" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Title</label>
+                                                <input type="number" name="meals[0][title]" class="form-control" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Type</label>
+                                                <select name="meals[0][type]" class="form-control" required>
+                                                    <option value="morning_drink">Morning Drink</option>
+                                                    <option value="breakfast">Breakfast</option>
+                                                    <option value="mid_day_snack">Mid-Day Snack</option>
+                                                    <option value="lunch">Lunch</option>
+                                                    <option value="evening_snack">Evening Snack</option>
+                                                    <option value="dinner">Dinner</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Calories</label>
+                                                <input type="number" name="meals[0][calories]" class="form-control"
+                                                    required>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">Description</label>
+                                                <textarea name="meals[0][description]" class="form-control"
+                                                    required></textarea>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-4 d-flex align-items-end">
+                                            <button type="button" class="btn btn-danger remove-meal"
+                                                style="display: none;">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="add-meal" class="btn btn-success">Add Another Meal</button><br>
+
+                            <button class="btn btn-primary" type="submit">Submit </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{{> footer}}
+<script
+    src="https://cdn.tiny.cloud/1/gjih04gph0whx805hjslljajbzeay2y124x7rt03w29fk08y/tinymce/7/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea#description',
+        height: 500,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | ' +
+            'bold italic backcolor | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | ' +
+            'removeformat | help',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+    });
+
+    function makeAjaxRequestAdd(url, headers, formData) {
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: formData,
+            headers: headers,
+            processData: false, // Important for FormData
+            contentType: false, // Important for FormData
+            success: function (response) {
+                toastr.clear();
+                toastr.success("Added successfully!", "Success");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1000);
+            },
+            error: function (err) {
+                console.error('Error fetching data:', err);
+
+                if (err.status === 403 || err.status === 401) {
+                    toastr.error('Authentication failed, please login again!');
+                    setTimeout(function () {
+                        window.location.href = '{{baseUrl}}admin/login';
+                    }, 2000);
+                } else {
+                    const responseJSON = err.responseJSON;
+                    toastr.error(responseJSON.message);
+                }
+            },
+        });
+    }
+
+    $('#add_faq').submit(function (e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        console.log('Form submitted: add_faq');
+
+        // Create a FormData object to handle form data and the image file
+        const formData = new FormData(this);
+        formData.append('title', $('#title').val());
+        formData.append('description', tinymce.get('description').getContent());
+        formData.append('price', $('#price').val());
+        formData.append('duration_days', $('#duration_days').val());
+
+
+        const token = localStorage.getItem('jwtToken');
+        const headers = token
+            ? {
+                'Authorization': `Bearer ${token}`,
+            }
+            : {};
+
+        const url = `${baseUrl}api/dietpackages/create`;
+
+        // Call the AJAX request function
+        makeAjaxRequestAdd(url, headers, formData);
+    });
+
+</script>
+<script>
+    let mealCount = 1;
+
+    document.getElementById('add-meal').addEventListener('click', () => {
+        const mealFields = document.getElementById('meal-fields');
+        const newMealGroup = document.createElement('div');
+        newMealGroup.className = 'meal-group col-md-12 mb-3';
+
+        newMealGroup.innerHTML = `
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Day</label>
+                                                <input type="number" name="meals[0][day]" class="form-control" required>
+                                            </div>
+                                             <div class="col-md-6">
+                                                <label class="form-label">Title</label>
+                                                <input type="number" name="meals[0][title]" class="form-control" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Type</label>
+                                                <select name="meals[0][type]" class="form-control" required>
+                                                    <option value="morning_drink">Morning Drink</option>
+                                                    <option value="breakfast">Breakfast</option>
+                                                    <option value="mid_day_snack">Mid-Day Snack</option>
+                                                    <option value="lunch">Lunch</option>
+                                                    <option value="evening_snack">Evening Snack</option>
+                                                    <option value="dinner">Dinner</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Calories</label>
+                                                <input type="number" name="meals[0][calories]" class="form-control"
+                                                    required>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">Description</label>
+                                                <textarea name="meals[0][description]" class="form-control"
+                                                    required></textarea>
+                                            </div>
+
+                                        </div>
+                                        
+                                   
+                                    <div class="col-md-4 d-flex align-items-end">
+                                    <button type="button" class="btn btn-danger remove-meal">Remove</button>
+                                    </div>
+                                    `;
+
+        mealFields.appendChild(newMealGroup);
+        mealCount++;
+    });
+
+    // Event delegation to handle remove button clicks
+    document.getElementById('meal-fields').addEventListener('click', (event) => {
+        if (event.target.classList.contains('remove-meal')) {
+            event.target.closest('.meal-group').remove();
+        }
+    });
+</script>

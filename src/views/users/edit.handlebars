@@ -1,0 +1,243 @@
+{{> header}}
+<!-- Main Content -->
+<main class="body-content">
+    <div class="ms-content-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ms-panel"> 
+                        <div class="ms-panel-header row ms-panel-custom">
+                            <a>
+                                <h6> Edit users </h6>
+                            </a>
+                            <a href="{{baseUrl}}admin/users" class="btn btn-pill btn-primary text-right">Manage
+                                users</a>
+                        </div> 
+                    <div class="ms-panel-body">
+                        {{!-- <p class="ms-directions">Use <code>.validation-fill</code> in
+                            <code>.needs-validation</code></p> --}}
+                        <form id="edit_slider" enctype="multipart/form-data">
+                            <input type="hidden" class="form-control" id="id" placeholder="Title..."
+                                            required="" name="id">
+                            <div class="form-row">
+                                 <div class="col-md-8 mb-3">
+                                    <label for="name">Name</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="name" placeholder="Enter Name"
+                                            required="" name="name">
+                                    </div>
+                                </div>
+                                <div class="col-md-8 mb-3">
+                                    <label for="designation">Phone</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="phone" placeholder="Enter Phone" name="phone"
+                                            required="">
+                                    </div>
+                                </div>
+                                <div class="col-md-8 mb-3">
+                                    <label for="description">Email</label>
+                                    <div class="input-group">
+                                        <input type="email" class="form-control" id="email"
+                                            placeholder="Email ...." name="email"> 
+                                    </div>
+                                </div>
+                               
+                                <div class="col-md-8 mb-3">
+                                    <label for="designation">Password</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="password" placeholder="Enter Password" name="password"
+                                            >
+                                    </div>
+                                </div>
+                                 <div class="col-md-8 mb-3">
+                                    <div id="imageshow"></div>
+                                    <label for="image">Image</label>
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" id="image" placeholder="file name"
+                                           >
+                                    </div>
+                                </div>
+                                  <div class="col-md-8 mb-3">
+                                    <label for="parent_id">Role </label>
+                                    <div class="input-group">
+                                        <select type="text" class="form-control" id="roleId"
+                                            placeholder="Enter Roles" name="roleId">
+                                            <option value="">Select Roles</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" type="submit">Submit </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{{> footer}}
+<script
+    src="https://cdn.tiny.cloud/1/gjih04gph0whx805hjslljajbzeay2y124x7rt03w29fk08y/tinymce/7/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea#description',
+        height: 500,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | ' +
+            'bold italic backcolor | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | ' +
+            'removeformat | help',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+    });
+
+    function makeAjaxRequestEdit(url, headers, formData) {
+        $.ajax({
+            url: url,
+            method: 'PUT',
+            data: formData,
+            headers: headers,
+            processData: false, // Important for FormData
+            contentType: false, // Important for FormData
+            success: function (response) {
+                toastr.clear();
+                toastr.success("Edit successfully!", "Success");
+                setTimeout(function () {
+                    window.history.back();
+                }, 1000);
+            },
+            error: function (err) {
+                console.error('Error fetching data:', err);
+
+                if (err.status === 403 || err.status === 401) {
+                    toastr.error('Authentication failed, please login again!');
+                    setTimeout(function () {
+                        window.location.href = '{{baseUrl}}admin/login';
+                    }, 2000);
+                } else {
+                    const responseJSON = err.responseJSON;
+                    toastr.error(responseJSON.message);
+                }
+            },
+        });
+    }
+
+    $('#edit_slider').submit(function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+         const imageFile = $('#image')[0].files[0];
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
+        const token = localStorage.getItem('jwtToken');
+        const headers = token
+            ? {
+                'Authorization': `Bearer ${token}`,
+            }
+            : {};
+
+        const url = `${baseUrl}api/users/edit`;
+
+        // Call the AJAX request function
+        makeAjaxRequestEdit(url, headers, formData);
+    });
+
+      function makeAjaxRequestGET(url, headers, params) {
+    $.ajax({
+        url: url,
+        method: 'GET',
+        data: params,
+        headers: headers,
+        success: function (response) {
+            toastr.clear();
+            
+            // Assuming the user data is in response.data[0]
+            const user = response.data[0];
+
+            // Fill user data fields
+            $('#name').val(`${user.name}`);
+            $('#id').val(`{{id}}`); // Replace with actual user ID dynamically if needed
+            $('#phone').val(`${user.phone}`);
+            $('#email').val(`${user.email}`);
+            
+            // Show profile image if available
+            if (user.imageUrl) {
+                $('#imageshow').html(`<img src="${user.imageUrl}" width="100">`);
+            }
+
+            // Now, handle setting the role in the dropdown
+            // Assuming `user.roleId` contains the user's current role ID
+            const userRoleId = user.roleId;
+
+            // Trigger the role options fetching logic
+            const token = localStorage.getItem('jwtToken');
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+            const roleParams = {}; // You can pass any required params here
+            const roleUrl = `${baseUrl}api/roles/get`;
+
+            // Fetch roles for the dropdown
+            makeAjaxRequestEditGET(roleUrl, headers, roleParams, userRoleId);
+        },
+        error: function (err) {
+            console.error('Error fetching data:', err);
+
+            // Handle authentication errors
+            if (err.status === 403 || err.status === 401) {
+                toastr.error('Authentication failed, please login again!');
+                setTimeout(function () {
+                    window.location.href = '{{baseUrl}}admin/login';
+                }, 2000);
+            } else {
+                toastr.error('An error occurred. Please try again.');
+            }
+        }
+    });
+}
+
+function makeAjaxRequestEditGET(url, headers, params, userRoleId) {
+    $.ajax({
+        url: url,
+        method: 'GET',
+        data: params,
+        headers: headers,
+        success: function (response) {
+            toastr.clear();
+            console.log("Select Roles======", response);
+
+            let html = '<option value="">Select Roles</option>';
+
+            // Populate the dropdown with roles
+            response.data.forEach(item => {
+                // If the role matches the user's current role, set it as selected
+                const selected = item.id === userRoleId ? 'selected' : '';
+                html += `<option value="${item.id}" ${selected}>${item.name}</option>`;
+            });
+
+            // Set the HTML for the role dropdown
+            $('#roleId').html(html);
+        },
+        error: function (err) {
+            console.error('Error fetching roles:', err);
+            if (err.status === 403 || err.status === 401) {
+                toastr.error('Authentication failed, please login again!');
+                setTimeout(function () {
+                    window.location.href = '{{baseUrl}}admin/login';
+                }, 2000);
+            } else {
+                toastr.error('An error occurred. Please try again.');
+            }
+        }
+    });
+}
+
+// Fetch user data
+const token = localStorage.getItem('jwtToken');
+const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+const params = { id: `{{id}}` }; // Pass the actual user ID dynamically
+const url = `${baseUrl}api/users/get`;
+makeAjaxRequestGET(url, headers, params);
+
+</script>

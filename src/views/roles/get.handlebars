@@ -1,0 +1,72 @@
+{{> header}}
+<!-- Main Content -->
+<main class="body-content">
+
+
+
+  <!-- Body Content Wrapper -->
+  <div class="ms-content-wrapper">
+    <div class="row">
+      <!-- Orders Table Expanded -->
+      <div class="col-md-12">
+        <div class="ms-panel">
+          <div class="ms-panel-header row ms-panel-custom">
+             <a><h6> Roles List</h6></a>
+             <a href="{{baseUrl}}admin/add-roles" class="btn btn-pill btn-primary text-right">Add Roles</a>
+          </div>
+          <div class="ms-panel-body">
+            <div class="table-responsive">
+              <div class="mb-3 main-search d-flex align-items-end justify-content-between">
+                <div class="dataTables_length" id="data-table-8_length">
+                  <label>Show </label>
+                    <select name="data-table-8_length"
+                      aria-controls="data-table-8" class="custom-select form-control form-control-sm" id="limit">
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                      <option value="200">200</option>
+                      <option value="500">500</option>
+                    </select> 
+                    
+                </div>
+                <div id="data-table-8_filter" class="dataTables_filter"><label></label>
+                  <input type="text" id="search" class="form-control search" placeholder="Search by title">
+                </label>
+                </div>
+              </div>
+              <table id="data-table" class="table table-striped thead-primary w-100">
+                <thead>
+                  <tr>
+                    <th scope="col">S.No</th>
+                    <th scope="col">Names</th>
+                     
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+               <ul id="pagination-controls" class="pagination has-gap"></ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+{{> footer}}
+<script>
+    let columns = [
+  { field: 'id', label: 'ID' },
+  { field: 'name', label: 'Roles Name ' }, 
+  { field: 'editaction', label: 'Actions' } // Special field for actions
+];
+  document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(function () { 
+      setDataType('roles',columns);
+    }, 500);
+  });
+</script>
