@@ -4,6 +4,8 @@ require('dotenv').config();
 // Import database configuration and models
 const sequelize = require('../config/dbConfig');
 const User = require('./userModel');
+const Agent = require('./agentModel');
+const Referral = require('./referralModel');
 const ActivityLogin = require('./activityModel');
 const Slider = require('./sliderModel');
 const Brand = require('./brandModel');
@@ -35,6 +37,8 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 // Define models
 db.User = User(sequelize, Sequelize.DataTypes);
+db.Agent = Agent(sequelize, Sequelize.DataTypes);
+db.Referral = Referral(sequelize, Sequelize.DataTypes);
 db.ActivityLogin = ActivityLogin(sequelize, Sequelize.DataTypes);
 db.Slider = Slider(sequelize, Sequelize.DataTypes);
 db.Brand = Brand(sequelize, Sequelize.DataTypes);
@@ -64,6 +68,7 @@ db.AppointmentPaymentDetails = AppointmentPaymentDetails(sequelize, Sequelize.Da
 db.Product.belongsToMany(db.Category, { through: db.ProductCategory, foreignKey: 'product_id' });
 db.Category.belongsToMany(db.Product, { through: db.ProductCategory, foreignKey: 'category_id' });
 db.Product.hasMany(db.ProductImage, { foreignKey: 'product_id' });
+db.Agent.hasMany(db.Referral, { foreignKey: 'agent_id' });
 db.ProductImage.belongsTo(db.Product, { foreignKey: 'product_id' });
 db.Product.hasMany(db.ProductAttribute, { foreignKey: 'product_id' });
 db.ProductAttribute.belongsTo(db.Product, { foreignKey: 'product_id' });

@@ -3,7 +3,9 @@ const path= require('path');
 const bodyParser = require('body-parser'); 
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
+const agentauthRoutes = require('./routes/agentauthRoutes');
 const userRoutes = require('./routes/userRoutes');
+const agentRoutes = require('./routes/agentRoutes');
 const activityRoutes = require('./routes/activityRoutes');
 const sliderRoutes = require('./routes/sliderRoutes');
 const brandRoutes = require('./routes/brandRoutes');
@@ -77,8 +79,10 @@ const authenticateJWT = (req, res, next) => {
 };  
 
 app.use('/api/users', authRoutes);
+app.use('/api/agent', agentauthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authenticateJWT,userRoutes);
+app.use('/api/agent', authenticateJWT,agentRoutes);
 app.use('/api/activities',authenticateJWT, activityRoutes);
 app.use('/api/sliders',authenticateJWT, sliderRoutes);
 app.use('/api/brands',authenticateJWT, brandRoutes);

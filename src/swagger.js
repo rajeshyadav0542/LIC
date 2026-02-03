@@ -14,7 +14,7 @@ const swaggerJson = {
         { url: "http://192.168.1.23:8001", description: "Local Server" }
     ],
     tags: [
-        { name: "Auth", description: "APIs related to user operations" },
+        { name: "Auth", description: "APIs related to agent operations" },
         { name: "Users", description: "APIs related to user operations" },
         { name: "Slider Management", description: "APIs related to group operations" },
         { name: "Brand Management", description: "APIs related to group operations" },
@@ -31,10 +31,10 @@ const swaggerJson = {
         }
     },
     paths: {
-        "/api/users/register": {
+        "/api/agent/register": {
             post: {
-                summary: "Register a new user",
-                description: "Create a new user in the system",
+                summary: "Register a new agent",
+                description: "Create a new agent in the system",
                 tags: ["Auth"],
                 // security: [
                 //     {
@@ -50,6 +50,11 @@ const swaggerJson = {
                                 properties: {
                                     name: { type: "string", example: "John Doe" },
                                     email: { type: "string", example: "john@example.com" },
+                                    bank: { type: "string", example: "Bank of World" },
+                                    account: { type: "string", example: "1234567890" },
+                                    ifsc: { type: "string", example: "IFSC0001234" },
+                                    pancard: { type: "string", example: "ABCDE1234F" },
+                                    uid: { type: "string", example: "A1B2C3D4E5" },
                                     password: { type: "string", example: "password123" },
                                     phone: { type: "string", example: "7900000000" }
                                 },
@@ -60,7 +65,7 @@ const swaggerJson = {
                 },
                 responses: {
                     "201": {
-                        description: "User registered successfully",
+                        description: "Agent registered successfully",
                         content: {
                             "application/json": {
                                 schema: {
@@ -84,7 +89,7 @@ const swaggerJson = {
                         }
                     },
                     "400": {
-                        description: "User already exists",
+                        description: "Agent already exists",
                         content: {
                             "application/json": {
                                 schema: {
@@ -103,10 +108,161 @@ const swaggerJson = {
                 }
             }
         },
-        "/api/users/login": {
+        "/api/agent/referral": {
             post: {
-                summary: "Login a user",
-                description: "Authenticate the user and return a token",
+                summary: "Referred a new member",
+                description: "Create a new member in the system",
+                tags: ["Auth"],
+                // security: [
+                //     {
+                //         bearerAuth: [] // This path requires a valid JWT token
+                //     }
+                // ],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    name: { type: "string", example: "John Doe" },
+                                    category: { type: "string", example: "Life term plan" },
+                                    agent_id: { type: "string", example: "1" },                                    
+                                    phone: { type: "string", example: "7900000000" }
+                                },
+                                required: ["name", "category", "agent_id", "phone"]
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    "201": {
+                        description: "Member registered successfully",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        message: { type: "string" },
+                                        data: {
+                                            type: "object",
+                                            properties: {
+                                                name: { type: "string" },
+                                                phone: { type: "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    
+                }
+            }
+        },
+        "/api/agent/referral/list": {
+            "get": {
+                "summary": "Get Referral List",
+                "tags": ["Auth"],
+               /* "security": [{ "bearerAuth": [] }],*/
+                "parameters": [
+                    {
+                        "name": "agent_id",
+                        "in": "query",
+                        "required": false,
+                        "description": "ID of the agent to fetch referrals",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "description": "Page number for pagination",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "description": "Number of items per page",
+                        "schema": {
+                            "type": "integer",
+                            "default": 50
+                        }
+                    }
+                ], 
+                "responses": {
+                    "200": {
+                        "description": "Referral list get successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": { "type": "boolean", "example": true },
+                                        "message": { "type": "string" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "agent_id": { "type": "integer" }                                                
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        description: "Some thing went wrong",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        message: { type: "string" },
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        description: "Bad Request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        message: { type: "string" },
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        },
+        "/api/agent/login": {
+            post: {
+                summary: "Login a agent",
+                description: "Authenticate the agent and return a token",
                 tags: ["Auth"],
                 requestBody: {
                     required: true,
