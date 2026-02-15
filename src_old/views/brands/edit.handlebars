@@ -1,0 +1,169 @@
+{{> header}}
+<!-- Main Content -->
+<main class="body-content">
+    <div class="ms-content-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ms-panel"> 
+                        <div class="ms-panel-header row ms-panel-custom">
+                            <a>
+                                <h6> Edit Brands </h6>
+                            </a>
+                            <a href="{{baseUrl}}admin/brands" class="btn btn-pill btn-primary text-right">Manage
+                                Brands</a>
+                        </div> 
+                    <div class="ms-panel-body">
+                        {{!-- <p class="ms-directions">Use <code>.validation-fill</code> in
+                            <code>.needs-validation</code></p> --}}
+                        <form id="edit_slider" enctype="multipart/form-data">
+                            <div class="form-row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="title">Title</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="title" placeholder="Title..."
+                                            required="">
+                                    </div>
+                                </div>
+                                <div class="col-md-8 mb-3">
+                                    <label for="description">description</label>
+                                    <div class="input-group">
+                                        <textarea type="text" class="form-control" id="description"
+                                            placeholder="Description ...."></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 mb-3">
+                                    <div id="imageshow"></div>
+                                    <label for="image">Image</label>
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" id="image" placeholder="file name"
+                                           >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" type="submit">Submit </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{{> footer}}
+<script
+    src="https://cdn.tiny.cloud/1/gjih04gph0whx805hjslljajbzeay2y124x7rt03w29fk08y/tinymce/7/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea#description',
+        height: 500,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | ' +
+            'bold italic backcolor | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | ' +
+            'removeformat | help',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+    });
+
+    function makeAjaxRequestEdit(url, headers, formData) {
+        $.ajax({
+            url: url,
+            method: 'PUT',
+            data: formData,
+            headers: headers,
+            processData: false, // Important for FormData
+            contentType: false, // Important for FormData
+            success: function (response) {
+                toastr.clear();
+                toastr.success("Edit successfully!", "Success");
+                setTimeout(function () {
+                    window.history.back();
+                }, 1000);
+            },
+            error: function (err) {
+                console.error('Error fetching data:', err);
+
+                if (err.status === 403 || err.status === 401) {
+                    toastr.error('Authentication failed, please login again!');
+                    setTimeout(function () {
+                        window.location.href = '{{baseUrl}}admin/login';
+                    }, 2000);
+                } else {
+                    const responseJSON = err.responseJSON;
+                    toastr.error(responseJSON.message);
+                }
+            },
+        });
+    }
+
+    $('#edit_slider').submit(function (e) {
+        e.preventDefault();
+        const formData = new FormData();
+        
+        formData.append('title', $('#title').val());
+        formData.append('id', {{id}});
+
+        formData.append('description',tinymce.get('description').getContent());
+        const imageFile = $('#image')[0].files[0];
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
+
+        const token = localStorage.getItem('jwtToken');
+        const headers = token
+            ? {
+                'Authorization': `Bearer ${token}`,
+            }
+            : {};
+
+        const url = `${baseUrl}api/brands/edit`;
+
+        // Call the AJAX request function
+        makeAjaxRequestEdit(url, headers, formData);
+    });
+
+     function makeAjaxRequestGET(url, headers, params) {
+        $.ajax({
+            url: url,
+            method: 'GET',
+            data: params,
+            headers: headers,
+            success: function (response) {
+                toastr.clear();
+                response.data.forEach(item => {
+                     $('#title').val(`${item.title}`);
+                     $('#description').val(`${item.description}`);
+                     if(item.imageUrl){
+                       $('#imageshow').html(`<img src="${item.imageUrl}" width="100">`);
+                     }
+                });
+            },
+            error: function (err) {
+                console.error('Error fetching data:', err);
+
+                // Handle authentication errors
+                if (err.status === 403 || err.status === 401) {
+                    toastr.error('Authentication failed, please login again!');
+                    setTimeout(function () {
+                        window.location.href = '{{baseUrl}}admin/login';
+                    }, 2000);
+                } else {
+                    toastr.error('An error occurred. Please try again.');
+                }
+            }
+        });
+    }
+      const token = localStorage.getItem('jwtToken');
+      const headers = token
+            ? {
+                'Authorization': `Bearer ${token}`,
+            }
+            : {};
+     const params={id:`{{id}}`};
+      const url = `${baseUrl}api/brands/get`;
+      makeAjaxRequestGET(url, headers, params);
+
+</script>

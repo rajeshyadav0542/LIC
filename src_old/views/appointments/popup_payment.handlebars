@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title> Dashboard</title>
+    <!-- Iconic Fonts -->
+    <link href="{{baseUrl}}vendors/iconic-fonts/font-awesome/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{baseUrl}}vendors/iconic-fonts/flat-icons/flaticon.css">
+    <!-- Bootstrap core CSS -->
+    <link href="{{baseUrl}}assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery UI -->
+    <link href="{{baseUrl}}assets/css/jquery-ui.min.css" rel="stylesheet">
+    <!-- Weedo styles -->
+    <link href="{{baseUrl}}assets/css/style.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{baseUrl}}favicon.ico">
+
+</head>
+
+<body class="ms-body ms-primary-theme ms-logged-out">
+
+    <!-- Main Content -->
+    <main class="body-content">
+        <!-- Body Content Wrapper -->
+        <div class="ms-content-wrapper ms-auth">
+            <div class="ms-auth-container">
+                <div class="ms-auth-col">
+                    <div class="ms-auth-form">
+                        <form class="needs-validation text-center" novalidate="" id="login-form">
+                            <h5>Secure Payment for Your Appointment</h5>
+                            <p>Complete your payment quickly and securely.</p>
+
+                            <!-- Pay Now Button -->
+                            <button class="btn btn-primary shadow-none" type="button" data-toggle="modal"
+                                data-target="#modal-12">
+                                Proceed to Payment
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forgot Password Modal -->
+        <div class="modal fade show" id="modal-12" tabindex="-1" role="dialog" aria-labelledby="modal-12"
+            style="display:block;">
+            <div class="modal-dialog modal-dialog-centered modal-min" role="document">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        {{!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button> --}}
+                        <i class="flaticon-secure-shield d-block"></i>
+                        <h5>Secure Payment for Your Appointment?</h5>
+                        <p>Complete your payment quickly and securely.</p>
+                        <form method="post" id="pay-form">
+                            <div class="ms-form-group has-icon">
+                                <input type="hidden" placeholder="Email Address" class="form-control"
+                                    name="forgot-password" id="forget_email" required>
+                                <h5>INR {{paydetails.value}}</h5>
+                            </div>
+                            <button type="submit" class="btn btn-primary shadow-none">Pay Now</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{baseUrl}}assets/js/jquery-3.3.1.min.js"></script>
+    <script src="{{baseUrl}}assets/js/jquery-3.3.1.min.js"></script>
+    <script src="{{baseUrl}}assets/js/popper.min.js"></script>
+    <script src="{{baseUrl}}assets/js/bootstrap.min.js"></script>
+    <script src="{{baseUrl}}assets/js/perfect-scrollbar.js"> </script>
+    <script src="{{baseUrl}}assets/js/jquery-ui.min.js"> </script>
+    {{>notify}}
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            async function startPayment() {
+
+                const response = await fetch("{{baseUrl}}api/web/create-order", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ amount: {{ paydetails.value }}, currency: "INR", token: '{{token}}' }), // Example amount
+                });
+
+        const order = await response.json();
+        const options = {
+            key: "rzp_test_m1z69Rp6DCJF5w",
+            amount: order.amount,
+            currency: order.currency,
+            order_id: order.id,
+            name: "Nutrillion",
+            description: "Nutrillion Transaction",
+            prefill: {
+                name: '{{appointmentData.name}}', // Auto-fill user name (optional)
+                email: '{{appointmentData.email}}',
+                contact: '{{appointmentData.phone}}', // Auto-fill mobile number (optional)
+            },
+            handler: async function (response) {
+                console.log("response", response);
+                const verifyRes = await fetch("{{baseUrl}}api/web/verify-payment", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        order_id: order.id,
+                        payment_id: response.razorpay_payment_id,
+                        signature: response.razorpay_signature,
+                        token: '{{token}}'
+                    }),
+                });
+                const result = await verifyRes.json();
+                if (result.status) {
+                    toastr.success(result.message);
+                    setTimeout(function () {
+                        window.location.href = "{{baseUrl}}appointment-booked";
+                    }, 500);
+
+                } else {
+                    toastr.error(result.message);
+                }
+            },
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+                    }
+
+        $('#pay-form').on('submit', function (e) {
+            e.preventDefault();
+            startPayment();
+        });
+                
+
+                });
+
+
+    </script>
+
+</body>
+
+</html>

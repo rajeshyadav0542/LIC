@@ -39,10 +39,10 @@ exports.registerValidation = async (req) => {
         })
         .run(req);
 
-    await body('password')
-        .isLength({ min: 6 })
-        .withMessage('Password must be at least 6 characters long')
-        .run(req);
+    // await body('password')
+    //     .isLength({ min: 6 })
+    //     .withMessage('Password must be at least 6 characters long')
+    //     .run(req);
 
     return validationResult(req);
 };
@@ -90,10 +90,10 @@ exports.loginValidation = async (req) => {
             }
         })
         .run(req);
-    await body('password')
-        .isLength({ min: 6 })
-        .withMessage('Password must be at least 6 characters long')
-        .run(req);
+    // await body('password')
+    //     .isLength({ min: 6 })
+    //     .withMessage('Password must be at least 6 characters long')
+    //     .run(req);
     return validationResult(req);
 };
 exports.changePasswordValidation = async (req) => {

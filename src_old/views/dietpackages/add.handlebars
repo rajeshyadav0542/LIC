@@ -1,0 +1,210 @@
+{{> header}}
+<!-- Main Content -->
+<main class="body-content">
+    <div class="ms-content-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ms-panel">
+                    <div class="ms-panel-header row ms-panel-custom">
+                        <a>
+                            <h6> Add Dietpackages </h6>
+                        </a>
+                        <a href="{{baseUrl}}admin/dietpackages" class="btn btn-pill btn-primary text-right">Manage
+                            Dietpackages</a>
+
+                    </div>
+                    <div class="ms-panel-body">
+                        {{!-- <p class="ms-directions">Use <code>.validation-fill</code> in
+                            <code>.needs-validation</code>
+                        </p> --}}
+                        <form id="add_faq" enctype="multipart/form-data">
+                            <div class="form-row row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="title">Title</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="title" placeholder="Title..."
+                                            required="">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 mb-3">
+                                    <label for="description">Description</label>
+                                    <div class="input-group">
+                                        <textarea type="text" class="form-control" id="description"
+                                            placeholder="Description ...."></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="price">Price</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="price" placeholder="Price..."
+                                            required="">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="duration_days">Duration Days</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="duration_days"
+                                            placeholder="Duration_days..." required="">
+                                    </div>
+                                </div>
+                                <hr>
+
+                                <h5>Meal Plan</h5>
+                                <div id="meal-calendar"></div>
+                            </div>
+                            
+                            <button class="btn btn-primary" type="submit">Submit </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{{> footer}}
+<script
+    src="https://cdn.tiny.cloud/1/gjih04gph0whx805hjslljajbzeay2y124x7rt03w29fk08y/tinymce/7/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea#description',
+        height: 500,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | ' +
+            'bold italic backcolor | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | ' +
+            'removeformat | help',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+    });
+
+    function makeAjaxRequestAdd(url, headers, formData) {
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: formData,
+            headers: headers,
+            processData: false, // Important for FormData
+            contentType: false, // Important for FormData
+            success: function (response) {
+                toastr.clear();
+                toastr.success("Added successfully!", "Success");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1000);
+            },
+            error: function (err) {
+                console.error('Error fetching data:', err);
+
+                if (err.status === 403 || err.status === 401) {
+                    toastr.error('Authentication failed, please login again!');
+                    setTimeout(function () {
+                        window.location.href = '{{baseUrl}}admin/login';
+                    }, 2000);
+                } else {
+                    const responseJSON = err.responseJSON;
+                    toastr.error(responseJSON.message);
+                }
+            },
+        });
+    }
+
+    $('#add_faq').submit(function (e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        console.log('Form submitted: add_faq');
+
+        // Create a FormData object to handle form data and the image file
+        const formData = new FormData(this);
+        formData.append('title', $('#title').val());
+        formData.append('description', tinymce.get('description').getContent());
+        formData.append('price', $('#price').val());
+        formData.append('duration_days', $('#duration_days').val());
+
+
+        const token = localStorage.getItem('jwtToken');
+        const headers = token
+            ? {
+                'Authorization': `Bearer ${token}`,
+            }
+            : {};
+
+        const url = `${baseUrl}api/dietpackages/create`;
+
+        // Call the AJAX request function
+        makeAjaxRequestAdd(url, headers, formData);
+    });
+
+</script>
+<script>
+    document.getElementById("duration_days").addEventListener("input", function () {
+        generateMealFields();
+    });
+
+    function generateMealFields() {
+        const mealCalendar = document.getElementById("meal-calendar");
+        mealCalendar.innerHTML = "";
+        const days = parseInt(document.getElementById("duration_days").value);
+
+        if (!days || days <= 0) return;
+
+        for (let day = 1; day <= days; day++) {
+            let mealGroup = document.createElement("div");
+            mealGroup.className = "border p-3 mb-3 rounded";
+            mealGroup.innerHTML = `
+                    <h6 class="mb-2">Day ${day}</h6>
+                    <div id="meal-entries-${day}">
+                        ${getMealEntryHTML(day, 0)}
+                    </div>
+                    <button type="button" class="btn btn-success btn-sm mt-2" onclick="addMealEntry(${day})">Add Another Meal</button>
+                `;
+            mealCalendar.appendChild(mealGroup);
+        }
+    }
+
+    function getMealEntryHTML(day, index) {
+        return `
+                <div class="row meal-entry border rounded p-2 mb-2">
+                    <div class="col-md-4">
+                        <label>Meal Type</label>
+                        <select name="meals[${day}][${index}][type]" class="form-control">
+                            <option value="morning_drink">Morning Drink</option>
+                            <option value="breakfast">Breakfast</option>
+                            <option value="mid_day_snack">Mid-Day Snack</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="evening_snack">Evening Snack</option>
+                            <option value="dinner">Dinner</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Title</label>
+                        <input type="text" name="meals[${day}][${index}][title]" class="form-control" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Calories</label>
+                        <input type="number" name="meals[${day}][${index}][calories]" class="form-control" required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger btn-sm remove-meal" onclick="removeMealEntry(this)">Remove</button>
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        <label>Description</label>
+                        <textarea name="meals[${day}][${index}][description]" class="form-control" required></textarea>
+                    </div>
+                </div>
+            `;
+    }
+
+    function addMealEntry(day) {
+        const mealEntries = document.getElementById(`meal-entries-${day}`);
+        const mealCount = mealEntries.querySelectorAll(".meal-entry").length;
+        mealEntries.insertAdjacentHTML("beforeend", getMealEntryHTML(day, mealCount));
+    }
+
+    function removeMealEntry(button) {
+        button.closest(".meal-entry").remove();
+    }
+</script>

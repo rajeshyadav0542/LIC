@@ -1,0 +1,902 @@
+{{> header}}
+<!-- Tagify CSS -->
+<link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify@4.9.2/dist/tagify.css" rel="stylesheet">
+
+<!-- Tagify JS -->
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@4.9.2/dist/tagify.min.js"></script>
+
+<!-- Main Content -->
+<main class="body-content">
+    <div class="ms-content-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ms-panel">
+                    <div class="ms-panel-header row ms-panel-custom">
+                        <a>
+                            <h6> Add Products </h6>
+                        </a>
+                        <a href="{{baseUrl}}admin/products" class="btn btn-pill btn-primary text-right">Manage
+                            Products</a>
+
+                    </div>
+                    <div class="ms-panel-body">
+                        {{!-- <p class="ms-directions">Use <code>.validation-fill</code> in
+                            <code>.needs-validation</code>
+                        </p> --}}
+                        <form id="add_brand" enctype="multipart/form-data">
+                            <div class="form-row">
+                                <div class="col-md-8 ms-panel-body ms-panel ms-panel-fh order-0">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="title">Product Name</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="title" oninput="generateSlug()"
+                                                placeholder="Product name" name="name" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label for="title">Slug</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="slug" placeholder="Enter Slug"
+                                                required="" name="slug">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 mb-3">
+                                        <label for="description">Short Description</label>
+                                        <div class="input-group">
+                                            <textarea type="text" class="form-control" id="short_description"
+                                                placeholder="Short Description" name="short_description"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label for="description">Description</label>
+                                        <div class="input-group">
+                                            <textarea type="text" class="form-control" id="description"
+                                                placeholder="Description" name="description"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label for="description">Additional Description</label>
+                                        <div class="input-group">
+                                            <textarea type="text" class="form-control" id="additional_description"
+                                                placeholder="Additional Description"
+                                                name="additional_description"></textarea>
+                                        </div>
+                                    </div>
+                                    <div id="main-manage-product-type">
+
+                                        <div class="card mb-3">
+                                            <div class="card-header">
+                                                <h4 class="card-title">
+                                                    Overview
+                                                </h4>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <div class="row price-group">
+                                                    <input class="detect-schedule d-none" name="sale_type" type="hidden"
+                                                        value="0">
+
+                                                    <div class="col-md-4">
+                                                        <div class="mb-3 position-relative">
+                                                            <label class="form-label" for="sku">
+                                                                SKU
+
+
+                                                            </label>
+
+
+
+                                                            <input class="form-control" type="text" name="sku" id="sku"
+                                                                value="SF-2443-VQYB">
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <div class="mb-3 position-relative">
+                                                            <label class="form-label" for="price">
+                                                                Price
+                                                            </label>
+
+                                                            <div class="input-group input-group-flat">
+                                                                <span class="input-group-text">₹</span>
+                                                                <input class="form-control input-mask-number"
+                                                                    type="text" name="price" id="price" value="0"
+                                                                    data-thousands-separator=","
+                                                                    data-decimal-separator="." step="any"
+                                                                    im-insert="true">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="mb-3 position-relative">
+                                                            <label class="form-label" for="sale_price">
+                                                                Price sale
+                                                                <span class="form-label-description">
+                                                                    <a class="turn-on-schedule  text-warning"
+                                                                        href="javascript:void(0)">Choose Discount
+                                                                        Period</a>
+                                                                    <a class="turn-off-schedule  text-danger"
+                                                                        style="display: none;"
+                                                                        href="javascript:void(0)">Cancel</a>
+                                                                </span>
+                                                            </label>
+                                                            <div class="input-group input-group-flat">
+                                                                <span class="input-group-text">₹</span>
+                                                                <input class="form-control input-mask-number"
+                                                                    type="text" name="sale_price" id="sale_price"
+                                                                    data-thousands-separator=","
+                                                                    data-decimal-separator="."
+                                                                    data-sale-percent-text="Discount :percent from original price."
+                                                                    im-insert="true">
+                                                            </div>
+                                                            <small class="form-hint">Discount <strong
+                                                                    id="discount-percent">0%</strong> from
+                                                                original price.</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 scheduled-time" style="display:none">
+                                                        <div class="mb-3 position-relative">
+                                                            <label class="form-label" for="start_date">
+                                                                From date
+                                                            </label>
+                                                            <input class="form-control form-date-time" type="text"
+                                                                name="start_date" id="start_date"
+                                                                placeholder="Y-m-d H:i:s">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 scheduled-time" style="display: none;">
+                                                        <div class="mb-3 position-relative">
+                                                            <label class="form-label" for="end_date">
+                                                                To date
+                                                            </label>
+                                                            <input class="form-control form-date-time" type="text"
+                                                                name="end_date" id="end_date" placeholder="Y-m-d H:i:s">
+                                                        </div>
+                                                    </div>
+
+
+                                                    <input name="product_id" type="hidden" value="">
+
+                                                </div>
+                                                <fieldset class="form-fieldset storehouse-info">
+                                                    <div class="mb-3 position-relative">
+                                                        <label class="form-label" for="quantity">
+                                                            Quantity
+                                                        </label>
+                                                        <input class="form-control input-mask-number" type="text"
+                                                            name="quantity" id="quantity" value="0" im-insert="true">
+                                                    </div>
+
+                                                    <div class="mb-3 position-relative">
+                                                        <input type="hidden" name="allow_checkout_when_out_of_stock"
+                                                            value="0">
+
+                                                        <label class="form-check">
+                                                            <input type="checkbox"
+                                                                name="allow_checkout_when_out_of_stock"
+                                                                class="form-check-input" value="1">
+
+                                                            <span class="form-check-label">
+                                                                Allow customer checkout when this product out of stock
+                                                            </span>
+
+                                                        </label>
+                                                    </div>
+                                                </fieldset>
+
+                                                <fieldset class="form-fieldset stock-status-wrapper"
+                                                    style="display: none;">
+                                                    <label class="form-label" for="stock_status">
+                                                        Stock status
+                                                    </label>
+                                                    <label class="form-check form-check-inline mb-3">
+                                                        <input type="radio" name="stock_status" class="form-check-input"
+                                                            value="in_stock" checked="">
+
+                                                        <span class="form-check-label">
+                                                            In stock
+                                                        </span>
+
+                                                    </label>
+                                                    <label class="form-check form-check-inline mb-3">
+                                                        <input type="radio" name="stock_status" class="form-check-input"
+                                                            value="out_of_stock">
+
+                                                        <span class="form-check-label">
+                                                            Out of stock
+                                                        </span>
+
+                                                    </label>
+                                                    <label class="form-check form-check-inline mb-3">
+                                                        <input type="radio" name="stock_status" class="form-check-input"
+                                                            value="on_backorder">
+
+                                                        <span class="form-check-label">
+                                                            On backorder
+                                                        </span>
+
+                                                    </label>
+                                                </fieldset>
+
+                                                <fieldset class="form-fieldset">
+                                                    <legend>
+                                                        <h3>Shipping</h3>
+                                                    </legend>
+                                                    <div class="row">
+                                                        <div class="col-md-3 col-md-6">
+                                                            <div class="mb-3 position-relative">
+                                                                <label class="form-label" for="weight">
+                                                                    Weight (g)
+
+
+                                                                </label>
+
+                                                                <div class="input-group input-group-flat">
+
+                                                                    <span class="input-group-text">g</span>
+
+                                                                    <input class="form-control input-mask-number"
+                                                                        type="text" name="weight" id="weight" value="0"
+                                                                        im-insert="true">
+
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3 col-md-6">
+                                                            <div class="mb-3 position-relative">
+                                                                <label class="form-label" for="length">
+                                                                    Length (cm)
+
+
+                                                                </label>
+
+                                                                <div class="input-group input-group-flat">
+
+                                                                    <span class="input-group-text">cm</span>
+
+                                                                    <input class="form-control input-mask-number"
+                                                                        type="text" name="length" id="length" value="0"
+                                                                        im-insert="true">
+
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3 col-md-6">
+                                                            <div class="mb-3 position-relative">
+                                                                <label class="form-label" for="wide">
+                                                                    Wide (cm)
+
+
+                                                                </label>
+
+                                                                <div class="input-group input-group-flat">
+
+                                                                    <span class="input-group-text">cm</span>
+
+                                                                    <input class="form-control input-mask-number"
+                                                                        type="text" name="wide" id="wide" value="0"
+                                                                        im-insert="true">
+
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3 col-md-6">
+                                                            <div class="mb-3 position-relative">
+                                                                <label class="form-label" for="height">
+                                                                    Height (cm)
+
+
+                                                                </label>
+
+                                                                <div class="input-group input-group-flat">
+
+                                                                    <span class="input-group-text">cm</span>
+
+                                                                    <input class="form-control input-mask-number"
+                                                                        type="text" name="height" id="height" value="0"
+                                                                        im-insert="true">
+
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+
+                                        <div class="card mb-3">
+                                            <div class="card-header">
+                                                <h4 class="card-title">Attributes</h4>
+                                                <div class="card-actions">
+                                                    <button class="btn btn-trigger-add-attribute" type="button"
+                                                        data-toggle-text="Cancel">
+                                                        Add new attributes
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <div class="add-new-product-attribute-wrap">
+                                                    <p class="text-muted">Adding new attributes helps the product to
+                                                        have many options, such as Weight.</p>
+
+                                                    <div class="list-product-attribute-values-wrap">
+                                                        <!-- Attributes will be added dynamically here -->
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4 ms-panel-body ms-panel ms-panel-fh order-md-0 order-1">
+                                    <div class="col-md-12">
+                                        <div class="ms-panel-header row ms-panel-custom">
+                                            <h6>Publish</h6>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <button class="btn btn-primary" type="submit">Publish</button>
+                                            {{!-- <a class="btn btn-primary" type="submit">Reset</a> --}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <div class="ms-panel-header row ms-panel-custom">
+                                            <h6>Feature Image</h6>
+                                        </div>
+
+                                        <div class="input-group">
+                                            <input type="file" name="image" class="form-control" id="feature_image"
+                                                accept="image/*"
+                                                onchange="previewImage('feature_image', 'feature_image_preview')">
+                                        </div>
+                                        <div class="mt-2">
+                                            <img id="feature_image_preview" src="" alt="Feature Image Preview"
+                                                style="display: none; max-width: 100%; max-height: 200px; border: 1px solid #ddd; padding: 5px;">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 mb-3">
+                                        <div class="ms-panel-header row ms-panel-custom">
+                                            <h6>Banner Image</h6>
+                                        </div>
+                                        <div class="input-group">
+                                            <input type="file" name="banner_image" class="form-control"
+                                                id="banner_image" accept="image/*"
+                                                onchange="previewImage('banner_image', 'banner_image_preview')">
+                                        </div>
+                                        <div class="mt-2">
+                                            <img id="banner_image_preview" src="" alt="Banner Image Preview"
+                                                style="display: none; max-width: 100%; max-height: 200px; border: 1px solid #ddd; padding: 5px;">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 mb-3">
+                                        <div class="ms-panel-header row ms-panel-custom">
+                                            <h6>Select Categories</h6>
+                                        </div>
+                                        <div id="categories" class="checkbox-group">
+                                            <br>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <div class="ms-panel-header row ms-panel-custom">
+                                            <h6>Product collections</h6>
+                                        </div>
+
+                                        <div id="collections" class="checkbox-group">
+                                            <br>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <div class="ms-panel-header row ms-panel-custom">
+                                            <h6>Product Labels</h6>
+                                        </div>
+
+                                        <div id="levels" class="checkbox-group">
+                                            <br>
+                                            <label>
+                                                <input type="radio" value="Hot" name="levels"> Hot
+                                            </label><br>
+                                            <label>
+                                                <input type="radio" value="New" name="levels"> New
+                                            </label><br>
+                                            <label>
+                                                <input type="radio" value="Sale" name="levels"> Sale
+                                            </label><br>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <div class="ms-panel-header row ms-panel-custom">
+                                            <h6>Product Plant Type</h6>
+                                        </div>
+                                        <div id="Plant" class="checkbox-group">
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <div class="ms-panel-header row ms-panel-custom">
+                                            <h6>Product THC</h6>
+                                        </div>
+                                        <div id="CBD" class="checkbox-group">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <div class="ms-panel-header row ms-panel-custom">
+                                            <h6>Product CBD</h6>
+                                        </div>
+                                        <div id="THC" class="checkbox-group">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <div class="ms-panel-header row ms-panel-custom">
+                                            <h6>Product Tags</h6>
+                                        </div>
+                                        <div class="form-group">
+                                            <br>
+                                            <label for="tags-input">Enter Product Tags (max tags 10 only.)</label>
+                                            <input type="text" id="tags-input" name="tags[]" class="form-control"
+                                                placeholder="Add tags" />
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{{> footer}}
+<script
+    src="https://cdn.tiny.cloud/1/gjih04gph0whx805hjslljajbzeay2y124x7rt03w29fk08y/tinymce/7/tinymce.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const addAttributeButton = document.querySelector(".btn-trigger-add-attribute");
+        const attributeValuesWrap = document.querySelector(".list-product-attribute-values-wrap");
+
+        // Function to generate a new attribute input form
+        function addAttribute() {
+            const attributeItem = document.createElement("div");
+            attributeItem.classList.add("product-attribute-item");
+
+            // HTML structure for attribute form with radio button for default variant and multiple image upload with preview
+            attributeItem.innerHTML = `
+            <div class="row">
+               <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label" for="attribute_name">Attribute</label>
+                        <select class="form-control attribute-dropdown" name="attribute_name[]">
+                            <option value="">Select Attribute</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label" for="attribute_value">Attribute Value</label>
+                        <select class="form-control attribute-value-dropdown" name="attribute_value[]">
+                            <option value="">Select Value</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label class="form-label" for="price">Price</label>
+                        <input class="form-control" type="text" name="price[]" placeholder="Price">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label class="form-label" for="discount">Discount</label>
+                        <input class="form-control" type="text" name="discount[]" placeholder="Discount">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label class="form-label">Default Variant</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="default_variant" value="1">
+                         
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label class="form-label" for="images">Upload Images</label>
+                        <input class="form-control" type="file" name="images[]" multiple>
+                    </div>
+                    <div class="image-preview-container row"></div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <button type="button" class="btn btn-danger btn-remove-attribute-item">Remove</button>
+            </div>`;
+
+            // Append new attribute item to the wrapper
+            attributeValuesWrap.appendChild(attributeItem);
+            const fileInput = attributeItem.querySelector('input[type="file"]');
+            const previewContainer = attributeItem.querySelector(".image-preview-container");
+
+            fileInput.addEventListener("change", function (event) {
+                previewContainer.innerHTML = '';
+                const files = event.target.files;
+
+                if (files) {
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            const imgElement = document.createElement("img");
+                            imgElement.src = e.target.result;
+                            imgElement.alt = `Preview ${i + 1}`;
+                            imgElement.classList.add("img-thumbnail", "preview-img");
+                            previewContainer.appendChild(imgElement);
+                        };
+
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+
+
+
+            const attributeDropdown = attributeItem.querySelector(".attribute-dropdown");
+            const attributeValueDropdown = attributeItem.querySelector(".attribute-value-dropdown");
+
+            // Populate the attributes dropdown via AJAX
+            fetchAttributes(attributeDropdown);
+
+            // Event listener to fetch attribute values based on selected attribute
+            attributeDropdown.addEventListener("change", function () {
+                const attributeId = attributeDropdown.value;
+                if (attributeId) {
+                    fetchAttributeValues(attributeId, attributeValueDropdown);
+                } else {
+                    attributeValueDropdown.innerHTML = '<option value="">Select Value</option>';
+                }
+            });
+
+            // Add event listener to remove button
+            const removeButton = attributeItem.querySelector(".btn-remove-attribute-item");
+            removeButton.addEventListener("click", function () {
+                attributeValuesWrap.removeChild(attributeItem);
+            });
+        }
+        const token = localStorage.getItem('jwtToken');
+        const headers = token
+            ? {
+                'Authorization': `Bearer ${token}`,
+            }
+            : {};
+
+        function fetchAttributes(dropdown) {
+            fetch(`${baseUrl}api/attributes/get`, {
+                method: 'GET', // You can change this to POST or another method depending on your API
+                headers: headers
+            })
+                .then((response) => response.json())
+                .then((data) => {
+
+                    dropdown.innerHTML = '<option value="">Select Attribute</option>';
+                    data.data.forEach((attribute) => {
+                        const option = document.createElement("option");
+                        option.value = attribute.id;
+                        option.textContent = attribute.attribute_name;
+                        dropdown.appendChild(option);
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error fetching attributes:", error);
+                });
+        }
+
+
+        // Fetch attribute values dynamically based on attribute ID
+        function fetchAttributeValues(attributeId, dropdown) {
+            fetch(`/api/attribute-values/get_ajax_attr_value?attribute_id=${attributeId}`, {
+                method: 'GET', // You can change this if needed based on your API
+                headers: headers
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    dropdown.innerHTML = '<option value="">Select Value</option>';
+                    data.data.forEach((value) => {
+                        const option = document.createElement("option");
+                        option.value = value.id;
+                        option.textContent = value.attribute_value;
+                        dropdown.appendChild(option);
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error fetching attribute values:", error);
+                });
+        }
+
+
+
+        // Event listener to add new attribute when button is clicked
+        addAttributeButton.addEventListener("click", addAttribute);
+    });
+
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const salePriceInput = document.getElementById("sale_price");
+        const originalPriceInput = document.getElementById("price");
+        const discountPercentText = document.getElementById("discount-percent");
+
+        // Function to update the discount based on original price and sale price
+        function updateDiscount() {
+            const originalPrice = parseFloat(originalPriceInput.value);
+            const salePrice = parseFloat(salePriceInput.value);
+
+            if (isNaN(originalPrice) || originalPrice <= 0 || isNaN(salePrice) || salePrice <= 0) {
+                discountPercentText.textContent = "0%";
+                return;
+            }
+
+            // Calculate discount percentage
+            const discount = ((originalPrice - salePrice) / originalPrice) * 100;
+
+            // Update the discount percentage display
+            discountPercentText.textContent = `${Math.round(discount)}%`;
+        }
+
+        // Event listeners to update discount on price changes
+        originalPriceInput.addEventListener("input", updateDiscount);
+        salePriceInput.addEventListener("input", updateDiscount);
+
+
+
+        // Elements
+        const turnOnSchedule = document.querySelector(".turn-on-schedule");
+        const turnOffSchedule = document.querySelector(".turn-off-schedule");
+        const scheduledTimeElements = document.querySelectorAll(".scheduled-time");
+
+        // Function to show the scheduled time fields
+        function showScheduledTime() {
+            scheduledTimeElements.forEach((element) => {
+                element.style.display = "block";
+            });
+            turnOnSchedule.style.display = "none";
+            turnOffSchedule.style.display = "inline";
+        }
+
+        // Function to hide the scheduled time fields
+        function hideScheduledTime() {
+            scheduledTimeElements.forEach((element) => {
+                element.style.display = "none";
+            });
+            turnOnSchedule.style.display = "inline";
+            turnOffSchedule.style.display = "none";
+        }
+
+        // Event listeners
+        turnOnSchedule.addEventListener("click", showScheduledTime);
+        turnOffSchedule.addEventListener("click", hideScheduledTime);
+    });
+
+    tinymce.init({
+        selector: 'textarea#description,textarea#short_description,textarea#additional_description',
+
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | ' +
+            'bold italic backcolor | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | ' +
+            'removeformat | help',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+        width: '100%'
+    });
+    function previewImage(inputId, previewId) {
+        const input = document.getElementById(inputId); // Get the file input by ID
+        const preview = document.getElementById(previewId); // Get the preview container by ID
+
+        // Check if a file is selected
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            // When the file is read, set the preview image source
+            reader.onload = function (e) {
+                preview.src = e.target.result; // Set the image source to the result
+                preview.style.display = 'block'; // Show the preview image
+            };
+
+            reader.readAsDataURL(input.files[0]); // Read the selected file as a data URL
+        } else {
+            // Hide the preview if no file is selected
+            preview.style.display = 'none';
+            preview.src = '';
+        }
+    }
+
+    function generateSlug() {
+        const title = document.getElementById('title').value;
+        const slug = title
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[0-9]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        document.getElementById('slug').value = slug;
+    }
+
+    // Initialize Tagify on the tags input field
+    var input = document.getElementById('tags-input');
+    var tagify = new Tagify(input, {
+        maxTags: 10,  // Maximum number of tags allowed
+        whitelist: ["hot", "new", "sale", "bestseller", "trending"],  // Predefined tag options
+        placeholder: "Add tags...",
+        delimiters: ",| "  // Allows adding tags using comma or space
+    });
+
+
+
+    function makeAjaxRequestAdd(url, headers, formData) {
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: formData,
+            headers: headers,
+            processData: false, // Important for FormData
+            contentType: false, // Important for FormData
+            success: function (response) {
+                toastr.clear();
+                toastr.success("Added successfully!", "Success");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1000);
+            },
+            error: function (err) {
+                console.error('Error fetching data:', err);
+                if (err.status === 403 || err.status === 401) {
+                    toastr.error('Authentication failed, please login again!');
+                    setTimeout(function () {
+                        window.location.href = '{{baseUrl}}admin/login';
+                    }, 2000);
+                } else {
+                    const responseJSON = err.responseJSON;
+                    toastr.error(responseJSON.message);
+                }
+            },
+        });
+    }
+
+    $('#add_brand').submit(function (e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        console.log('Form submitted: add_brand');
+
+        // Create a FormData object to handle form data and the image file
+        const formData = new FormData(this);
+        console.log("formData", formData);
+
+        // Include the image file from the file input
+
+
+        const token = localStorage.getItem('jwtToken');
+        const headers = token
+            ? {
+                'Authorization': `Bearer ${token}`,
+            }
+            : {};
+
+        const url = `${baseUrl}api/products/create`;
+
+        // Call the AJAX request function
+        makeAjaxRequestAdd(url, headers, formData);
+    });
+
+    const token = localStorage.getItem('jwtToken');
+    const headers = token
+        ? {
+            'Authorization': `Bearer ${token}`,
+        }
+        : {};
+
+
+    function fetchCategories() {
+        fetch(`${baseUrl}api/categories/get`, {
+            method: 'GET',  // Default is GET, but it is specified here for clarity
+            headers: headers
+        })
+            .then(response => response.json())
+            .then(data => {
+                const categoriesContainer = document.querySelector('#categories');
+                categoriesContainer.innerHTML = '';  // Clear any existing categories
+                categoriesContainer.appendChild(document.createElement('br'));
+                data.data.forEach(category => {
+                    const checkboxLabel = document.createElement('label');
+                    checkboxLabel.innerHTML = `
+                <input type="checkbox" value="${category.id}" name="categories[]"> ${category.title}
+            `;
+                    categoriesContainer.appendChild(checkboxLabel);
+                    categoriesContainer.appendChild(document.createElement('br')); // To separate each checkbox
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+            });
+    }
+    function fetchCollections() {
+
+        fetch(`${baseUrl}api/collections/get`, {
+            method: 'GET',  // Default is GET, but it is specified here for clarity
+            headers: headers
+        })
+            .then(response => response.json())
+            .then(data => {
+                const categoriesContainer = document.querySelector('#collections');
+                categoriesContainer.innerHTML = '';  // Clear any existing categories
+                categoriesContainer.appendChild(document.createElement('br'));
+                data.data.forEach(category => {
+                    const checkboxLabel = document.createElement('label');
+                    checkboxLabel.innerHTML = `
+                <input type="radio" value="${category.id}" name="collections"> ${category.title}
+            `;
+                    categoriesContainer.appendChild(checkboxLabel);
+                    categoriesContainer.appendChild(document.createElement('br')); // To separate each checkbox
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching fetchCollections:', error);
+            });
+    }
+    function fetchProductFilter(type) {
+
+        fetch(`${baseUrl}api/products/get_filter_type?type=${type}`, {
+            method: 'GET',  // Default is GET, but it is specified here for clarity
+            headers: headers
+        })
+            .then(response => response.json())
+            .then(data => {
+
+                const categoriesContainer = document.querySelector(`#${type}`);
+                categoriesContainer.innerHTML = '';  // Clear any existing categories
+                categoriesContainer.appendChild(document.createElement('br'));
+                data.data.forEach(filter => {
+                    const checkboxLabel = document.createElement('label');
+                    checkboxLabel.innerHTML = `<input type="radio" value="${filter.id}" name="${type}"> ${filter.title}`;
+                    categoriesContainer.appendChild(checkboxLabel);
+                    categoriesContainer.appendChild(document.createElement('br')); // To separate each checkbox
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching fetchCollections:', error);
+            });
+    }
+    fetchCategories();
+    fetchCollections();
+    fetchProductFilter('Plant');
+    fetchProductFilter('CBD');
+    fetchProductFilter('THC');
+
+</script>

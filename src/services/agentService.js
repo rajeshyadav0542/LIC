@@ -11,10 +11,10 @@ const PUBLIC_PATH_IMG = process.env.PUBLIC_PATH_IMG;
 const { Agent, Referral } = require('../models');
 const { console } = require('inspector');
 const { Op } = require('sequelize');
-exports.register = async ({ name, email, password, phone, bank, account, ifsc, pancard, uid }) => {
-    const hashedPassword = await bcrypt.hash(password, 10);
+exports.register = async ({ name, email, phone, bank, account, ifsc, pancard, uid }) => {
+    //const hashedPassword = await bcrypt.hash(password, 10);
     const user = await db.Agent.create({
-        name, email,bank,account,ifsc,pancard,uid, password: hashedPassword, phone: phone ?? '', profile_img: '', age: '',
+        name, email,bank,account,ifsc,pancard,uid, phone: phone ?? '', profile_img: '', age: '',
         gender: ''
     });
     const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: '7d' });
@@ -67,56 +67,50 @@ exports.referral_list = async ({ agent_id }) => {
     }
 };  
 
-exports.login = async ({ email, password }) => {
+exports.login = async ({ email}) => {
 
     const user = await db.Agent.findOne({
         where: {
-          [Op.or]: [
-            { email },
-            { phone:email }
-          ]
+            [Op.or]: [
+                { email },
+                { phone: email }
+            ]
         }
-      });
+    });
 
     if (!user) {
         throw new Error('User not found');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    if (!isPasswordValid) {
-        throw new Error('Invalid credentials');
-    }
+    // if (!isPasswordValid) {
+    //     throw new Error('Invalid credentials');
+    // }
 
-    const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: '7d' });       
+    // 🔥 Generate OTP
+    // const otp = Math.floor(100000 + Math.random() * 900000);
+    const otp = 1234;
 
-    const now = new Date();
-    const loginDetails = {
-        user_id: user.id, // Assuming result contains userId
-        // ipAddress: req.ip, // Get IP address from request
-        ip_address: '  ',
-        loginTime: new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }) ,   
-    };
+    const expiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    await db.ActivityLogin.create(loginDetails);
+    // ✅ Store OTP in SAME TABLE
+    await user.update({
+        otp: otp,
+        otp_expiry: expiry,
+        otp_verified: 0
+    });
+
+    // Send OTP (SMS/Email)
+    console.log(`OTP for ${user.phone}: ${otp}`);
 
     return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        bank: user.bank,
-        account: user.account,
-        ifsc: user.ifsc,
-        pancard: user.pancard,
-        uid: user.uid,
-        age: user.age,
-        gender: user.gender,        
-        profile_img: user.profile_img ? process.env.PUBLIC_PATH_IMG + user.profile_img : '',
-        token
+        message: "OTP sent successfully",
+        user_id: user.id,
+        phone: user.phone
     };
-
 };
+
 
 exports.changePassword = async (userId, oldPassword, newPassword) => {
     try {
@@ -200,16 +194,41 @@ exports.temp_register = async ({ phone }) => {
 
 
 exports.temp_verify = async ({ phone, otp }) => {
-    const temp = await db.TempUser.findOne({ where: { phone, temp_otp: otp } });
-    if (temp) {
-        await temp.update({ verify_status: 1 });
-        return {
-            id: temp.id,
-            phone: temp.phone,
-            verify_status: temp.verify_status,
-        };
+    const user = await db.Agent.findOne({
+        where: { phone, otp: otp }
+    });
+
+    if (!user) {
+        throw new Error("Invalid OTP");
     }
-    return null;
+
+    // Check expiry
+    if (new Date() > user.otp_expiry) {
+        throw new Error("OTP expired");
+    }
+
+    // Mark verified
+    await user.update({
+        otp_verified: 1,
+        otp: null
+    });
+
+    // 🔥 Generate Token
+    const token = jwt.sign(
+        { id: user.id },
+        process.env.JWT_SECRET || "secret",
+        { expiresIn: "7d" }
+    );
+
+    return {
+        message: "Login successful",
+        token,
+        user: {
+            id: user.id,
+            name: user.name,
+            phone: user.phone
+        }
+    };
 };
 
 

@@ -58,7 +58,7 @@ const swaggerJson = {
                                     password: { type: "string", example: "password123" },
                                     phone: { type: "string", example: "7900000000" }
                                 },
-                                required: ["name", "email", "password"]
+                                required: ["name", "email"]
                             }
                         }
                     }
@@ -272,7 +272,7 @@ const swaggerJson = {
                                 type: "object",
                                 properties: {
                                     email: { type: "string", example: "john@example.com" },
-                                    password: { type: "string", example: "password123" }
+                                    // password: { type: "string", example: "password123" }
                                 },
                                 required: ["email", "password"]
                             }
@@ -771,6 +771,71 @@ const swaggerJson = {
                     },
                     "401": {
                         description: "Bad Request or something went wrong",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        message: { type: "string" },
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/agent/otp_verify": {
+            post: {
+                summary: "OTP verify a user",
+                description: "OTP verify a user in the system",
+                tags: ["Auth"],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    phone: { type: "string", example: "7900000000" },
+                                    otp: { type: "string", example: "" }
+                                },
+                                required: ["phone"]
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    "200": {
+                        description: "Otp verify successfully",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        message: { type: "string" },
+                                        data: {
+                                            type: "object",
+                                            properties: {
+                                                name: { type: "string" },
+                                                email: { type: "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        description: "Some thing wen wrong",
                         content: {
                             "application/json": {
                                 schema: {

@@ -1,10 +1,13 @@
-const userService = require('../services/agentService');
+const userService11 = require('../services/agentService');
 const db = require('../models');
 const { registerValidation,referralValidation, loginValidation, changePasswordValidation, otpValidation } = require('../validators/agentValidator');
 const { sendEmail, generateEmailContentAccount,forgetPasswordEmailContent } = require('../helpers/emailHelper');
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
 const e = require('express');
+
+const jwt = require("jsonwebtoken");
+
 exports.register = async (req, res) => {
     try {
         
@@ -19,7 +22,7 @@ exports.register = async (req, res) => {
             });
         }
 
-        const user = await userService.register(req.body);
+        const user = await userService11.register(req.body);
         res.status(201).json({ status: true, message: 'User registered successfully', user });
 
     } catch (error) {
@@ -41,7 +44,7 @@ exports.referral = async (req, res) => {
             });
         }
 
-        const user = await userService.referral(req.body);
+        const user = await userService11.referral(req.body);
         res.status(201).json({ status: true, message: 'Referral created successfully', user });
 
     } catch (error) {
@@ -53,7 +56,7 @@ exports.referral = async (req, res) => {
 exports.referral_list = async (req, res) => {
     try {        
         console.log(req.query);
-        const referral_list = await userService.referral_list(req.query);
+        const referral_list = await userService11.referral_list(req.query);
         res.status(201).json({ status: true, message: 'Get referral list successfully', referral_list:referral_list });
     } catch (error) {
         console.log("test12");
@@ -73,7 +76,7 @@ exports.login = async (req, res) => {
                 message: errorMessages.length >= 1 ? errorMessages[0] : errorMessages.join(', '),
             });
         }
-        const result = await userService.login(req.body);
+        const result = await userService11.login(req.body);
         res.status(200).json({ status: true, message: 'Login Successfully', data: result });
     } catch (error) {
         res.status(401).json({ status: false, message: error.message });
@@ -90,13 +93,34 @@ exports.send_otp = async (req, res) => {
                 message: errorMessages.length >= 1 ? errorMessages[0] : errorMessages.join(', '),
             });
         }
-        const user = await userService.temp_register(req.body);
+        const user = await userService11.temp_register(req.body);
         console.log(user);
         res.status(201).json({ status: true, message: 'Otp send successfully', data: user });
     } catch (error) {
         res.status(400).json({ status: false, message: error.message });
     }
 };
+
+// exports.otp_verify = async (req, res) => {
+//     try {
+//         const errors = await otpValidation(req);
+//         if (!errors.isEmpty()) {
+//             const errorMessages = errors.array().map((err) => err.msg);
+//             return res.status(400).json({
+//                 status: false,
+//                 message: errorMessages.length >= 1 ? errorMessages[0] : errorMessages.join(', '),
+//             });
+//         }
+//         const user = await userService.temp_verify(req.body);
+//         if (!user) {
+//             return res.status(400).json({ status: false, message: 'Invalid phone number or OTP.' });
+//         }
+//         res.status(200).json({ status: true, message: 'OTP verified successfully.', data: user });
+//     } catch (error) {
+//         res.status(500).json({ status: false, message: error.message });
+//     }
+// };
+
 
 exports.otp_verify = async (req, res) => {
     try {
@@ -105,16 +129,41 @@ exports.otp_verify = async (req, res) => {
             const errorMessages = errors.array().map((err) => err.msg);
             return res.status(400).json({
                 status: false,
-                message: errorMessages.length >= 1 ? errorMessages[0] : errorMessages.join(', '),
+                message: errorMessages.length >= 1
+                    ? errorMessages[0]
+                    : errorMessages.join(', '),
             });
         }
-        const user = await userService.temp_verify(req.body);
+
+        const user = await userService11.temp_verify(req.body);
+
         if (!user) {
-            return res.status(400).json({ status: false, message: 'Invalid phone number or OTP.' });
+            return res.status(400).json({
+                status: false,
+                message: 'Invalid phone number or OTP.'
+            });
         }
-        res.status(200).json({ status: true, message: 'OTP verified successfully.', data: user });
+
+        // 🔥 CREATE TOKEN
+        const token = jwt.sign(
+            { id: user.id, phone: user.phone },
+            process.env.JWT_SECRET || "your_secret_key",
+            { expiresIn: "7d" }
+        );
+
+        // 🔥 RETURN TOKEN ALSO
+        res.status(200).json({
+            status: true,
+            message: 'OTP verified successfully.',
+            token: token,   // ✅ THIS WAS MISSING
+            data: user
+        });
+
     } catch (error) {
-        res.status(500).json({ status: false, message: error.message });
+        res.status(500).json({
+            status: false,
+            message: error.message
+        });
     }
 };
 

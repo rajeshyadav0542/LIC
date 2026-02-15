@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title> Dashboard</title>
+    <!-- Iconic Fonts -->
+    <link href="{{baseUrl}}vendors/iconic-fonts/font-awesome/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{baseUrl}}vendors/iconic-fonts/flat-icons/flaticon.css">
+    <!-- Bootstrap core CSS -->
+    <link href="{{baseUrl}}assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery UI -->
+    <link href="{{baseUrl}}assets/css/jquery-ui.min.css" rel="stylesheet">
+    <!-- Weedo styles -->
+    <link href="{{baseUrl}}assets/css/style.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{baseUrl}}favicon.ico">
+
+</head>
+
+<body class="ms-body ms-primary-theme ms-logged-out">
+
+    <!-- Main Content -->
+    <main class="body-content">
+        <!-- Body Content Wrapper -->
+        
+        <div class="modal fade show" id="modal-12" tabindex="-1" role="dialog" aria-labelledby="modal-12"
+            style="display:block;">
+            <div class="modal-dialog modal-dialog-centered modal-min" role="document">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        {{!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button> --}}
+                        <i class="flaticon-tick-inside-circle d-block text-success"></i>
+                        <h5>Payment Successful!</h5>
+                        <p>Your appointment has been confirmed.</p>
+                        <button type="button" class="btn btn-primary shadow-none"
+                            onclick="window.location.href='/appointments'">
+                            Go to Appointments
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{baseUrl}}assets/js/jquery-3.3.1.min.js"></script>
+    <script src="{{baseUrl}}assets/js/jquery-3.3.1.min.js"></script>
+    <script src="{{baseUrl}}assets/js/popper.min.js"></script>
+    <script src="{{baseUrl}}assets/js/bootstrap.min.js"></script>
+    <script src="{{baseUrl}}assets/js/perfect-scrollbar.js"> </script>
+    <script src="{{baseUrl}}assets/js/jquery-ui.min.js"> </script>
+    {{>notify}}
+
+    
+
+</body>
+
+</html>

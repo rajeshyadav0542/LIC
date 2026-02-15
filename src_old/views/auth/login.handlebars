@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title> Dashboard</title>
+    <!-- Iconic Fonts -->
+    <link href="{{baseUrl}}vendors/iconic-fonts/font-awesome/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{baseUrl}}vendors/iconic-fonts/flat-icons/flaticon.css">
+    <!-- Bootstrap core CSS -->
+    <link href="{{baseUrl}}assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery UI -->
+    <link href="{{baseUrl}}assets/css/jquery-ui.min.css" rel="stylesheet">
+    <!-- Weedo styles -->
+    <link href="{{baseUrl}}assets/css/style.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{baseUrl}}favicon.ico">
+
+</head>
+
+<body class="ms-body ms-primary-theme ms-logged-out">
+
+    <!-- Main Content -->
+    <main class="body-content">
+
+
+
+        <!-- Body Content Wrapper -->
+        <div class="ms-content-wrapper ms-auth">
+
+            <div class="ms-auth-container">
+
+                <div class="ms-auth-col">
+                    <div class="ms-auth-form">
+                        <form class="needs-validation" novalidate="" id="login-form">
+                            <h1>Login to Account</h1>
+                            <p>Please enter your phone/email and password to continue</p>
+                            <div class="mb-3">
+                                <label for="email">Phone/Email Address</label>
+                                <div class="input-group">
+                                    <input type="text" name="email" class="form-control" id="email"
+                                        placeholder="Phone/Email Address" required="">
+                                    <div class="invalid-feedback">
+                                        Please provide a valid email.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label for="password">Password</label>
+                                <div class="input-group">
+                                    <input type="password" name="password" class="form-control" id="password"
+                                        placeholder="Password" required="">
+                                    <div class="invalid-feedback">
+                                        Please provide a password.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                {{!-- <label class="ms-checkbox-wrap">
+                                    <input class="form-check-input" type="checkbox" value="">
+                                    <i class="ms-checkbox-check"></i>
+                                </label>
+                                <span> Remember Password </span> --}}
+                                <label class="d-block mt-3"><a href="#" class="btn-link" data-toggle="modal"
+                                        data-target="#modal-12">Forgot Password?</a></label>
+                            </div>
+                            <button class="btn btn-primary mt-4 d-block w-100" type="submit">Sign In</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </aside>
+        <!-- Forgot Password Modal -->
+        <div class="modal fade" id="modal-12" tabindex="-1" role="dialog" aria-labelledby="modal-12">
+            <div class="modal-dialog modal-dialog-centered modal-min" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-body text-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <i class="flaticon-secure-shield d-block"></i>
+                        <h1>Forgot Password?</h1>
+                        <p> Enter your email to recover your password </p>
+                        <form method="post" id="forget-password">
+                            <div class="ms-form-group has-icon">
+                                <input type="text" placeholder="Email Address" class="form-control"
+                                    name="forgot-password" value="" id="forget_email">
+                                <i class="material-icons">email</i>
+                            </div>
+                            <button type="submit" class="btn btn-primary shadow-none">Reset Password</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="{{baseUrl}}assets/js/jquery-3.3.1.min.js"></script>
+    <script src="{{baseUrl}}assets/js/jquery-3.3.1.min.js"></script>
+    <script src="{{baseUrl}}assets/js/popper.min.js"></script>
+    <script src="{{baseUrl}}assets/js/bootstrap.min.js"></script>
+    <script src="{{baseUrl}}assets/js/perfect-scrollbar.js"> </script>
+    <script src="{{baseUrl}}assets/js/jquery-ui.min.js"> </script>
+    {{>notify}}
+
+
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('#login-form').on('submit', function (e) {
+                e.preventDefault();
+                const email = $('#email').val();
+                const password = $('#password').val();
+                $.ajax({
+                    url: '/api/users/login',
+                    type: 'POST',
+                    data: { email: email, password: password },
+                    success: function (response) {
+                        const responseJSON = response;
+                        if (responseJSON.status) {
+                            toastr.success(responseJSON.message);
+                            localStorage.setItem('jwtToken', response.data.token);
+                            localStorage.setItem('role', response.data.role);
+                            localStorage.setItem('profileData', JSON.stringify(response.data));
+                            localStorage.setItem("menu", JSON.stringify(response.data.menu));
+                            localStorage.setItem('profileFetched', 'true');
+                            console.log(response.data.id);
+                            if (response.data.role == 3) {
+                                window.location.href = `{{baseUrl}}user/dashboard`;
+                            } else {
+                                window.location.href = `{{baseUrl}}admin/dashboard`;
+                            }
+                        } else {
+                            $('#error-message').text(response.message).show();
+                            toastr.error(responseJSON.message)
+                        }
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        const responseJSON = response.responseJSON;
+                        toastr.error(responseJSON.message);
+                    }
+                });
+            });
+
+            $('#forget-password').on('submit', function (e) {
+                e.preventDefault();
+                const email = $('#forget_email').val();
+                $.ajax({
+                    url: '/api/auth/resetPassword',
+                    type: 'POST',
+                    data: { email: email },
+                    success: function (response) {
+                        const responseJSON = response;
+                        if (responseJSON.status) {
+                            if (responseJSON.status) {
+                                toastr.success(responseJSON.message);
+                                setTimeout(function () {
+                                    window.location.reload();
+                                }, 2000);
+                            } else {
+                                $('#error-message').text(response.message).show();
+                                toastr.error(responseJSON.message)
+                            }
+                        } else {
+                            $('#error-message').text(response.message).show();
+                            toastr.error(responseJSON.message)
+                        }
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        const responseJSON = response.responseJSON;
+                        toastr.error(responseJSON.message);
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
