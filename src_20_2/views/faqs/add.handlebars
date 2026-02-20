@@ -1,0 +1,115 @@
+{{> header}}
+<!-- Main Content -->
+<main class="body-content">
+  <div class="ms-content-wrapper">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="ms-panel">
+             <div class="ms-panel-header row ms-panel-custom">
+             <a><h6> Add faqs </h6></a>
+             <a href="{{baseUrl}}admin/faqs" class="btn btn-pill btn-primary text-right">Manage faqs</a>
+              
+          </div>
+          <div class="ms-panel-body">
+            {{!-- <p class="ms-directions">Use <code>.validation-fill</code> in <code>.needs-validation</code></p> --}}
+            <form   id="add_faq" enctype="multipart/form-data">
+              <div class="form-row">
+                <div class="col-md-8 mb-3">
+                  <label for="title">Title</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="title" placeholder="Title..."
+                      required="">
+                  </div>
+                </div>
+                <div class="col-md-8 mb-3">
+                  <label for="description">Description</label>
+                  <div class="input-group">
+                    <textarea type="text" class="form-control" id="description" placeholder="Description ...."></textarea>
+                  </div>
+                </div>
+                
+              </div>
+
+              <button class="btn btn-primary" type="submit">Submit </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{{> footer}}
+<script
+  src="https://cdn.tiny.cloud/1/gjih04gph0whx805hjslljajbzeay2y124x7rt03w29fk08y/tinymce/7/tinymce.min.js"></script>
+<script>
+  tinymce.init({
+    selector: 'textarea#description',
+    height: 500,
+    plugins: [
+      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+      'insertdatetime', 'media', 'table', 'help', 'wordcount'
+    ],
+    toolbar: 'undo redo | blocks | ' +
+      'bold italic backcolor | alignleft aligncenter ' +
+      'alignright alignjustify | bullist numlist outdent indent | ' +
+      'removeformat | help',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+  });
+
+  function makeAjaxRequestAdd(url, headers, formData) {
+  $.ajax({
+    url: url,
+    method: 'POST',
+    data: formData,
+    headers: headers,
+    processData: false, // Important for FormData
+    contentType: false, // Important for FormData
+    success: function (response) {
+      toastr.clear();
+      toastr.success("Added successfully!", "Success");
+      setTimeout(function () {
+        window.location.reload();
+      }, 1000);
+    },
+    error: function (err) {
+      console.error('Error fetching data:', err);
+
+      if (err.status === 403 || err.status === 401) {
+        toastr.error('Authentication failed, please login again!');
+        setTimeout(function () {
+          window.location.href = '{{baseUrl}}admin/login';
+        }, 2000);
+      } else {
+        const responseJSON = err.responseJSON;
+        toastr.error(responseJSON.message);
+      }
+    },
+  });
+}
+
+$('#add_faq').submit(function (e) {
+  e.preventDefault(); // Prevent the default form submission
+
+  console.log('Form submitted: add_faq');
+
+  // Create a FormData object to handle form data and the image file
+  const formData = new FormData();
+  formData.append('title', $('#title').val());
+  formData.append('description',tinymce.get('description').getContent());
+
+  
+  const token = localStorage.getItem('jwtToken');
+  const headers = token
+    ? {
+        'Authorization': `Bearer ${token}`,
+      }
+    : {};
+
+  const url = `${baseUrl}api/faqs/create`;
+
+  // Call the AJAX request function
+  makeAjaxRequestAdd(url, headers, formData);
+});
+
+</script>

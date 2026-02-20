@@ -1,0 +1,456 @@
+{{> header}}
+<!-- Main Content -->
+<main class="body-content">
+    <div class="ms-content-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ms-panel">
+                    <div class="ms-panel-header row ms-panel-custom">
+                        <a>
+                            <h6> Edit Roles </h6>
+                        </a>
+                        <a href="{{baseUrl}}admin/roles" class="btn btn-pill btn-primary text-right">Manage
+                            Roles</a>
+                    </div>
+                    <div class="ms-panel-body">
+                        {{!-- <p class="ms-directions">Use <code>.validation-fill</code> in
+                            <code>.needs-validation</code>
+                        </p> --}}
+                        <form id="edit_slider" enctype="multipart/form-data">
+                            <div class="form-row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="title">Roles Name</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="name" placeholder="name..."
+                                            required="" name="roleName">
+                                    </div>
+                                </div>
+                                <div class="mb-3 col-md-8">
+                                    <label class="form-label">Permissions</label>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="appointment-read"
+                                                    name="permissions[]" value="appointment-read">
+                                                <label class="form-check-label" for="appointment-read">appointment
+                                                    Read</label>
+                                            </div>
+                                            {{!-- <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="appointment-create"
+                                                    name="permissions[]" value="appointment-create">
+                                                <label class="form-check-label" for="appointment-create">appointment
+                                                    Create</label>
+                                            </div> --}}
+                                            {{!-- <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="appointment-edit"
+                                                    name="permissions[]" value="appointment-edit">
+                                                <label class="form-check-label" for="appointment-edit">appointment
+                                                    Edit</label>
+                                            </div> --}}
+                                            {{!-- <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="appointment-delete"
+                                                    name="permissions[]" value="appointment-delete">
+                                                <label class="form-check-label" for="appointment-delete">appointment
+                                                    Delete</label>
+                                            </div> --}}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="certification-read"
+                                                    name="permissions[]" value="certification-read">
+                                                <label class="form-check-label" for="certification-read">certification
+                                                    Read</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input"
+                                                    id="certification-create" name="permissions[]"
+                                                    value="certification-create">
+                                                <label class="form-check-label" for="certification-create">certification
+                                                    Create</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="certification-edit"
+                                                    name="permissions[]" value="certification-edit">
+                                                <label class="form-check-label" for="certification-edit">certification
+                                                    Edit</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input"
+                                                    id="certification-delete" name="permissions[]"
+                                                    value="certification-delete">
+                                                <label class="form-check-label" for="certification-delete">certification
+                                                    Delete</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="slider-read"
+                                                    name="permissions[]" value="slider-read">
+                                                <label class="form-check-label" for="slider-read">Slider Read</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="slider-create"
+                                                    name="permissions[]" value="slider-create">
+                                                <label class="form-check-label" for="slider-create">Slider
+                                                    Create</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="slider-edit"
+                                                    name="permissions[]" value="slider-edit">
+                                                <label class="form-check-label" for="slider-edit">Slider Edit</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="slider-delete"
+                                                    name="permissions[]" value="slider-delete">
+                                                <label class="form-check-label" for="slider-delete">Slider
+                                                    Delete</label>
+                                            </div>
+                                        </div>
+                                        <!-- Repeat similar blocks for other permissions -->
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="brand-read"
+                                                    name="permissions[]" value="brand-read">
+                                                <label class="form-check-label" for="brand-read">Brand Read</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="brand-create"
+                                                    name="permissions[]" value="brand-create">
+                                                <label class="form-check-label" for="brand-create">Brand Create</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="brand-edit"
+                                                    name="permissions[]" value="brand-edit">
+                                                <label class="form-check-label" for="brand-edit">Brand Edit</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="brand-delete"
+                                                    name="permissions[]" value="brand-delete">
+                                                <label class="form-check-label" for="brand-delete">Brand Delete</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="blog-read"
+                                                    name="permissions[]" value="blog-read">
+                                                <label class="form-check-label" for="blog-read">blog Read</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="blog-create"
+                                                    name="permissions[]" value="blog-create">
+                                                <label class="form-check-label" for="blog-create">blog Create</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="blog-edit"
+                                                    name="permissions[]" value="blog-edit">
+                                                <label class="form-check-label" for="blog-edit">blog Edit</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="blog-delete"
+                                                    name="permissions[]" value="blog-delete">
+                                                <label class="form-check-label" for="blog-delete">blog Delete</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="team-read"
+                                                    name="permissions[]" value="team-read">
+                                                <label class="form-check-label" for="team-read">team Read</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="team-create"
+                                                    name="permissions[]" value="team-create">
+                                                <label class="form-check-label" for="team-create">team Create</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="team-edit"
+                                                    name="permissions[]" value="team-edit">
+                                                <label class="form-check-label" for="team-edit">team Edit</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="team-delete"
+                                                    name="permissions[]" value="team-delete">
+                                                <label class="form-check-label" for="team-delete">team Delete</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="testimonial-read"
+                                                    name="permissions[]" value="testimonial-read">
+                                                <label class="form-check-label" for="testimonial-read">testimonial
+                                                    Read</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="testimonial-create"
+                                                    name="permissions[]" value="testimonial-create">
+                                                <label class="form-check-label" for="testimonial-create">testimonial
+                                                    Create</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="testimonial-edit"
+                                                    name="permissions[]" value="testimonial-edit">
+                                                <label class="form-check-label" for="testimonial-edit">testimonial
+                                                    Edit</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="testimonial-delete"
+                                                    name="permissions[]" value="testimonial-delete">
+                                                <label class="form-check-label" for="testimonial-delete">testimonial
+                                                    Delete</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="faq-read"
+                                                    name="permissions[]" value="faq-read">
+                                                <label class="form-check-label" for="faq-read">faq Read</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="faq-create"
+                                                    name="permissions[]" value="faq-create">
+                                                <label class="form-check-label" for="faq-create">faq Create</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="faq-edit"
+                                                    name="permissions[]" value="faq-edit">
+                                                <label class="form-check-label" for="faq-edit">faq Edit</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="faq-delete"
+                                                    name="permissions[]" value="faq-delete">
+                                                <label class="form-check-label" for="faq-delete">faq Delete</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="setting-read"
+                                                    name="permissions[]" value="setting-read">
+                                                <label class="form-check-label" for="setting-read">setting Read</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="setting-create"
+                                                    name="permissions[]" value="setting-create">
+                                                <label class="form-check-label" for="setting-create">setting
+                                                    Create</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="setting-edit"
+                                                    name="permissions[]" value="setting-edit">
+                                                <label class="form-check-label" for="setting-edit">setting Edit</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="setting-delete"
+                                                    name="permissions[]" value="setting-delete">
+                                                <label class="form-check-label" for="setting-delete">setting
+                                                    Delete</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="role-read"
+                                                    name="permissions[]" value="role-read">
+                                                <label class="form-check-label" for="role-read">role Read</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="role-create"
+                                                    name="permissions[]" value="role-create">
+                                                <label class="form-check-label" for="role-create">role Create</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="role-edit"
+                                                    name="permissions[]" value="role-edit">
+                                                <label class="form-check-label" for="role-edit">role Edit</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="role-delete"
+                                                    name="permissions[]" value="role-delete">
+                                                <label class="form-check-label" for="role-delete">role Delete</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="user-read"
+                                                    name="permissions[]" value="user-read">
+                                                <label class="form-check-label" for="user-read">user Read</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="user-create"
+                                                    name="permissions[]" value="user-create">
+                                                <label class="form-check-label" for="user-create">user Create</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="user-edit"
+                                                    name="permissions[]" value="user-edit">
+                                                <label class="form-check-label" for="user-edit">user Edit</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="user-delete"
+                                                    name="permissions[]" value="user-delete">
+                                                <label class="form-check-label" for="user-delete">user Delete</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="dietpackage-read"
+                                                    name="permissions[]" value="dietpackage-read">
+                                                <label class="form-check-label" for="dietpackage-read">dietpackage
+                                                    Read</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="dietpackage-create"
+                                                    name="permissions[]" value="dietpackage-create">
+                                                <label class="form-check-label" for="dietpackage-create">dietpackage
+                                                    Create</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="dietpackage-edit"
+                                                    name="permissions[]" value="dietpackage-edit">
+                                                <label class="form-check-label" for="dietpackage-edit">dietpackage
+                                                    Edit</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="dietpackage-delete"
+                                                    name="permissions[]" value="dietpackage-delete">
+                                                <label class="form-check-label" for="dietpackage-delete">dietpackage
+                                                    Delete</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="login-activity-read"
+                                                    name="permissions[]" value="login-activity-read">
+                                                <label class="form-check-label" for="login-activity-read">Login Activity
+                                                    Read</label>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <button class="btn btn-primary" type="submit">Submit </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{{> footer}}
+<script
+    src="https://cdn.tiny.cloud/1/gjih04gph0whx805hjslljajbzeay2y124x7rt03w29fk08y/tinymce/7/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea#description',
+        height: 500,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | ' +
+            'bold italic backcolor | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | ' +
+            'removeformat | help',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+    });
+
+    function makeAjaxRequestEdit(url, headers, formData) {
+        $.ajax({
+            url: url,
+            method: 'PUT',
+            data: formData,
+            headers: headers,
+            processData: false, // Important for FormData
+            contentType: false, // Important for FormData
+            success: function (response) {
+                toastr.clear();
+                toastr.success("Edit successfully!", "Success");
+                setTimeout(function () {
+                    window.history.back();
+                }, 1000);
+            },
+            error: function (err) {
+                console.error('Error fetching data:', err);
+
+                if (err.status === 403 || err.status === 401) {
+                    toastr.error('Authentication failed, please login again!');
+                    setTimeout(function () {
+                        window.location.href = '{{baseUrl}}admin/login';
+                    }, 2000);
+                } else {
+                    const responseJSON = err.responseJSON;
+                    toastr.error(responseJSON.message);
+                }
+            },
+        });
+    }
+
+    $('#edit_slider').submit(function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+
+        formData.append('id', {{ id }});
+
+
+    const token = localStorage.getItem('jwtToken');
+    const headers = token
+        ? {
+            'Authorization': `Bearer ${token}`,
+        }
+        : {};
+
+    const url = `${baseUrl}api/roles/edit`;
+
+    // Call the AJAX request function
+    makeAjaxRequestEdit(url, headers, formData);
+    });
+
+    function makeAjaxRequestGET(url, headers, params) {
+        $.ajax({
+            url: url,
+            method: 'GET',
+            data: params,
+            headers: headers,
+            success: function (response) {
+                toastr.clear();
+                response.data.forEach(item => {
+                    $('#name').val(`${item.name}`);
+                    $('#permison').val(`${item.permission}`);
+                    const permissions = JSON.parse(item.userPermissions); // Assuming `userPermissions` is a JSON string
+                    $('input[name="permissions[]"]').prop('checked', false); // Uncheck all checkboxes first
+
+                    permissions.forEach(permission => {
+                        $(`input[name="permissions[]"][value="${permission}"]`).prop('checked', true); // Check specific checkboxes
+                    });
+                });
+            },
+            error: function (err) {
+                console.error('Error fetching data:', err);
+
+                // Handle authentication errors
+                if (err.status === 403 || err.status === 401) {
+                    toastr.error('Authentication failed, please login again!');
+                    setTimeout(function () {
+                        window.location.href = '{{baseUrl}}admin/login';
+                    }, 2000);
+                } else {
+                    toastr.error('An error occurred. Please try again.');
+                }
+            }
+        });
+    }
+    const token = localStorage.getItem('jwtToken');
+    const headers = token
+        ? {
+            'Authorization': `Bearer ${token}`,
+        }
+        : {};
+    const params = { id: `{{id}}` };
+    const url = `${baseUrl}api/roles/get`;
+    makeAjaxRequestGET(url, headers, params);
+
+</script>

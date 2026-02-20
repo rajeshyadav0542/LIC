@@ -55,10 +55,9 @@ const swaggerJson = {
                                     ifsc: { type: "string", example: "IFSC0001234" },
                                     pancard: { type: "string", example: "ABCDE1234F" },
                                     uid: { type: "string", example: "A1B2C3D4E5" },
-                                    password: { type: "string", example: "password123" },
                                     phone: { type: "string", example: "7900000000" }
                                 },
-                                required: ["name", "email"]
+                                required: ["name", "phone"]
                             }
                         }
                     }

@@ -1,0 +1,220 @@
+{{> header}}
+<!-- Main Content -->
+<main class="body-content">
+    <div class="ms-content-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ms-panel">
+                    <div class="ms-panel-header row ms-panel-custom">
+                        <a>
+                            <h6> Settings </h6>
+                        </a>
+                        
+                    </div>
+                    <div class="ms-panel-body">
+                        {{!-- <p class="ms-directions">Use <code>.validation-fill</code> in
+                            <code>.needs-validation</code>
+                        </p> --}}
+                        <form id="settingsForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="logo">Logo (Image Upload)</label>
+                            <input type="file" class="form-control" id="logo" name="logo">
+                            <img id="logoPreview" src="" alt="Logo Preview" width="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="text" class="form-control" id="phone" name="phone"
+                                placeholder="Enter phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <textarea type="text" class="form-control" id="address" name="address"
+                                placeholder="Enter address"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="facebook_link">Facebook Link</label>
+                            <input type="url" class="form-control" id="facebook_link" name="facebook_link"
+                                placeholder="Enter Facebook link">
+                        </div>
+                          <div class="form-group">
+                            <label for="instagram_link">Instagram Link</label>
+                            <input type="url" class="form-control" id="instagram_link" name="instagram_link"
+                                placeholder="Enter instagram_link ">
+                        </div>
+                         <div class="form-group">
+                            <label for="youtube_link">Youtube Link</label>
+                            <input type="url" class="form-control" id="youtube_link" name="youtube_link"
+                                placeholder="Enter Youtube link ">
+                        </div>
+                          <div class="form-group">
+                            <label for="linkedin_link">Linkedin Link</label>
+                            <input type="url" class="form-control" id="linkedin_link" name="linkedin_link"
+                                placeholder="Enter Likedin link ">
+                        </div>
+                        <div class="form-group">
+                            <label for="twitter_link">Twitter Link</label>
+                            <input type="url" class="form-control" id="twitter_link" name="twitter_link"
+                                placeholder="Enter twitter link ">
+                        </div>
+                         <div class="form-group">
+                            <label for="working_time">Working time </label>
+                            <input type="text" class="form-control" id="working_time" name="working_time"
+                                placeholder="Enter working_time">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="privacy_policy">Privacy Policy</label>
+                            <textarea type="text" class="form-control description" id="privacy_policy" name="privacy_policy11"
+                                placeholder="Enter Privacy Policy"></textarea>
+                        </div>
+                         <div class="form-group">
+                            <label for="terms_condition">Terms Conditions</label>
+                            <textarea type="text" class="form-control" id="terms_condition" name="terms_condition11"
+                                placeholder="Enter Terms & Conditions"></textarea>
+                        </div>
+                         <div class="form-group">
+                            <label for="refund_policy">Refund Policy</label>
+                            <textarea type="text" class="form-control" id="refund_policy" name="refund_policy11"
+                                placeholder="Enter Privacy Policy"></textarea>
+                        </div>
+                         <div class="form-group">
+                            <label for="disclaimer">Disclaimer</label>
+                            <textarea type="text" class="form-control" id="disclaimer" name="disclaimer11"
+                                placeholder="Enter Disclaimer"></textarea>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label for="favicon">Favicon (Image Upload)</label>
+                            <input type="file" class="form-control" id="favicon" name="favicon">
+                            <img id="faviconPreview" src="" alt="Favicon Preview" width="50">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{{> footer}}
+<script
+    src="https://cdn.tiny.cloud/1/gjih04gph0whx805hjslljajbzeay2y124x7rt03w29fk08y/tinymce/7/tinymce.min.js"></script>
+ <script>
+   $(document).ready(function() {
+    setTimeout(function() {
+        tinymce.init({
+            selector: 'textarea#privacy_policy, textarea#refund_policy, textarea#terms_condition, textarea#disclaimer',
+            height: 500,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | blocks | ' +
+                'bold italic backcolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help',
+            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+        });
+    }, 100);  
+});
+
+</script>
+
+<script>
+   
+    $(document).ready(function() {
+        let token = localStorage.getItem('jwtToken');
+        const headers = token? {  'Authorization': `Bearer ${token}`,}: {};
+        $.ajax({
+            url: '{{baseUrl}}api/settings/get',  
+            type: 'GET',
+            headers: headers,
+            success: function(response) { 
+                $('#email').val(response.data.email || '');
+                $('#phone').val(response.data.phone || '');
+                $('#address').val(response.data.address || '');
+                $('#facebook_link').val(response.data.facebook_link || ''); 
+                $('#instagram_link').val(response.data.instagram_link || ''); 
+                $('#youtube_link').val(response.data.youtube_link || ''); 
+                $('#linkedin_link').val(response.data.linkedin_link || ''); 
+                $('#twitter_link').val(response.data.twitter_link || ''); 
+                $('#working_time').val(response.data.working_time || ''); 
+                $('#privacy_policy').val(response.data.privacy_policy || ''); 
+                $('#terms_condition').val(response.data.terms_condition || ''); 
+                $('#refund_policy').val(response.data.refund_policy || ''); 
+                $('#disclaimer').val(response.data.disclaimer || ''); 
+
+                $('#logoPreview').attr('src', response.data.logo);     
+                $('#faviconPreview').attr('src', response.data.favicon);   
+                
+            },
+            error: function(err) {
+               
+                const responseJSON = err.responseJSON;
+                toastr.error(responseJSON.message);
+            }
+        });
+    });
+     $('#settingsForm').on('submit', function (e) {
+        e.preventDefault();  
+          let token = localStorage.getItem('jwtToken');
+         const headers = token? {  'Authorization': `Bearer ${token}`,}: {};
+        const formData = new FormData(this); 
+        formData.append('privacy_policy',tinymce.get('privacy_policy').getContent()); 
+        formData.append('refund_policy',tinymce.get('refund_policy').getContent()); 
+        formData.append('terms_condition',tinymce.get('terms_condition').getContent()); 
+        formData.append('disclaimer',tinymce.get('disclaimer').getContent()); 
+        $.ajax({
+            url: '{{baseUrl}}api/settings/upsert',
+            type: 'POST',
+            data: formData,
+            headers:headers,
+            processData: false,   
+            contentType: false, 
+            success: function (response) {
+                toastr.success("Updated successfully!", "Success");
+                
+            },
+           error: function (err) { 
+            if (err.status === 403 || err.status === 401) {
+                toastr.error('Authentication failed, please login again!');
+                setTimeout(function () {
+                window.location.href = '{{baseUrl}}admin/login';
+                }, 2000);
+            } else {
+                const responseJSON = err.responseJSON;
+                toastr.error(responseJSON.message);
+            }
+            },
+        });
+    });
+</script>
+
+ <script
+  src="https://cdn.tiny.cloud/1/gjih04gph0whx805hjslljajbzeay2y124x7rt03w29fk08y/tinymce/7/tinymce.min.js"></script>
+<script>
+  tinymce.init({
+    selector: 'textarea.description',
+    height: 500,
+    plugins: [
+      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+      'insertdatetime', 'media', 'table', 'help', 'wordcount'
+    ],
+    toolbar: 'undo redo | blocks | ' +
+      'bold italic backcolor | alignleft aligncenter ' +
+      'alignright alignjustify | bullist numlist outdent indent | ' +
+      'removeformat | help',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+  });
+
+</script>
+
+

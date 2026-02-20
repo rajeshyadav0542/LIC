@@ -1,0 +1,388 @@
+{{>script}}
+{{>notify}}
+<script>
+  $(document).ready(function () {
+    const token = localStorage.getItem('jwtToken');
+    const profileFetched = localStorage.getItem('profileFetched');
+    const profileData = localStorage.getItem('profileData');
+    console.log("profileFetched", profileFetched);
+
+    if (!token || !profileFetched) {
+      toastr.error('No token found. Please login.');
+      window.location.href = `{{baseUrl}}admin/login`;
+    }
+
+    const menu = JSON.parse(localStorage.getItem("menu"));
+
+    function generateMenu(menu, parentElement) {
+      menu.forEach(item => {
+        let sidebar = `
+          <li class="menu-item">
+            <a href="${item.link || '#'}" class="${item.children && item.children.length > 0 ? 'has-chevron' : ''}" data-toggle="collapse" data-target="#${item.title || ''}" 
+              aria-expanded="false" aria-controls="${item.title || ''}">
+              <span><i class="${item.icon || ''}"></i> ${item.title || ''}</span>
+            </a>`;
+
+        if (item.children && item.children.length > 0) {
+          sidebar += `
+            <ul id="${item.title || ''}" class="collapse" aria-labelledby="${item.title || ''}" data-parent="#side-nav-accordion">`;
+          item.children.forEach(subItem => {
+            sidebar += `
+              <li><a href="${subItem.link || '#'}">${subItem.title || ''}</a></li>`;
+          });
+          sidebar += `
+            </ul>`;
+        }
+
+        sidebar += `
+          </li>`;
+
+        $(parentElement).append(sidebar);
+      });
+    }
+
+    const menuContainer = document.getElementById("menu");
+    generateMenu(menu, "#side-nav-accordion");
+
+    console.log("profileData", profileData);
+    const user = JSON.parse(profileData);
+    $('#profile-name').text(user.name);
+    $('#profile-email').text(user.email);
+    if (user.profile_img) {
+      $('#profile-image').attr('src', `${user.profile_img}`);
+    } else {
+      $('#profile-image').attr('src', `{{defaultUserImg}}`);
+    }
+
+    $('#logoutBtn').on('click', function () {
+      localStorage.removeItem('jwtToken');
+      localStorage.removeItem('profileFetched');
+      localStorage.removeItem('profileData');
+      toastr.success('You have been logged out successfully.');
+      setTimeout(function () {
+        window.location.href = '{{baseUrl}}admin/login';
+      }, 2000);
+    });
+  });
+
+  const baseUrl = `{{baseUrl}}`; // Replace with your actual API URL
+  let currentPage = 1;
+  let limit = 1;
+  let dataType = 'blogs'; // Default data type
+
+  // Fetch data from the API
+  function fetchData(page = 1, search = '', columns = '', limit) {
+    const params = {
+      page,
+      limit,
+      search
+    };
+    const token = localStorage.getItem('jwtToken');
+    const headers = token ? {
+      'Authorization': `Bearer ${token}`,
+    } : {};
+    const url = `${baseUrl}api/${dataType}/get`;
+    makeAjaxRequest(url, headers, params, (response) => {
+      handleDataResponse(response, columns);
+    }, columns);
+  }
+
+  // Handle the response from the API
+  function handleDataResponse(response, columns) {
+    const { data, currentPage, totalItems, totalPages } = response;
+    renderTable(data, columns);
+    renderPagination(currentPage, totalPages);
+  }
+
+  // Render the table with data
+  function renderTable(data, columns) {
+    const table = $('#data-table');
+    const thead = $('<thead>');
+    const tbody = $('<tbody>');
+
+    // Generate thead dynamically based on columns
+    const headerRow = $('<tr>');
+    columns.forEach(column => {
+      headerRow.append(`<th>${column.label}</th>`);
+    });
+    thead.append(headerRow);
+
+    // Generate tbody dynamically based on data
+    if (data.length > 0) {
+      data.forEach(item => {
+        const row = createDataRow(item, columns);
+        tbody.append(row);
+      });
+    } else {
+      tbody.append(`<h6 class="text-center mt-3"> No Records Found!</h6>`);
+    }
+
+    table.empty();
+    table.append(thead);
+    table.append(tbody);
+  }
+
+  function createDataRow(item, columns) {
+    const row = $('<tr>');
+
+    columns.forEach(column => {
+      if (column.field === 'actions') {
+        row.append(`
+          <td>
+            <a href="{{baseUrl}}admin/edit-${dataType}?id=${item.id}">
+              <i class="fas fa-pencil-alt ms-text-primary"></i>
+            </a>
+            <i class="far fa-trash-alt ms-text-danger" onclick="showConfirmationPopup(${item.id})"></i>
+          </td>
+        `);
+      } else if (column.field === 'appointmentview') {
+        row.append(`
+          <td>
+            <a href="{{baseUrl}}user/user-appointment-details?token=${item.appointmentToken}">
+              <i class="fas fa-eye ms-text-primary"></i>
+            </a>
+              
+            <a>
+              <i class="fas fa-edit ms-text-primary" onclick="statuschange_appointment('${item.appointmentToken}')"></i>
+            </a>
+          </td>
+        `);
+      } else if (column.field === 'editaction') {
+        row.append(`
+          <td>
+            <a href="{{baseUrl}}admin/edit-${dataType}?id=${item.id}">
+              <i class="fas fa-pencil-alt ms-text-primary"></i>
+            </a>
+          </td>
+        `);
+      } else if (column.field === 'imageUrl') {
+        row.append(`<td><img src="${item.imageUrl}" alt="${item.title}" width="100"></td>`);
+      } else if (column.field === 'payment_status') {
+        const paymentUrl = `{{baseUrl}}appointment_pay?token=${item.appointmentToken}`;
+        const paymentBtn = `<a href="${paymentUrl}" class="btn btn-success">Pay Now</a>`;
+
+        const successText = `<a href="#" class="text text-success">${item[column.field]}</a>`;
+        const copyBtn = `
+          <button class="btn btn-primary ms-2" onclick="copyToClipboard('${paymentUrl}')">
+            <i class="fas fa-copy"></i> Payment Copy Link
+          </button>`;
+
+        if (column.label === 'PaymentStatus!') {
+          row.append(`<td>${item[column.field] !== 'success' ? paymentBtn : successText}</td>`);
+        } else {
+          row.append(`<td>${item[column.field] !== 'success' ? `${copyBtn}` : successText}</td>`);
+        }
+      } else {
+        row.append(`<td>${item[column.field]}</td>`);
+      }
+    });
+
+    return row;
+  }
+
+  // Function to copy link to clipboard
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      toastr.success('Payment Invitation link copied to clipboard!');
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  }
+
+  // Render the pagination controls
+  function renderPagination(currentPage, totalPages) {
+    const paginationControls = $('#pagination-controls');
+    paginationControls.empty(); // Clear the existing controls
+
+    let paginationHTML = '';
+    for (let i = 1; i <= totalPages; i++) {
+      paginationHTML += createPaginationButton(i, currentPage);
+    }
+
+    paginationControls.html(paginationHTML);
+  }
+
+  // Create individual pagination button
+  function createPaginationButton(page, currentPage) {
+    return `<li class="paginate_button page-item ${currentPage === page ? 'active' : 'secondary'}" 
+                onclick="changePage(${page})">
+                <a class="page-link"> ${page}</a>
+               </li>`;
+  }
+
+  // Handle page change
+  function changePage(page) {
+    currentPage = page;
+    const search = $('#search').val();
+    fetchData(currentPage, search, columns, limit);
+  }
+
+  // Handle search input change
+  $('#search').on('input', function () {
+    const search = $(this).val();
+    fetchData(currentPage, search, columns, limit);
+  });
+
+  $('#limit').on('change', function () {
+    const limit = $(this).val(); // Get the selected value
+    console.log("limit====", limit);
+    fetchData(currentPage, search, columns, limit);
+  });
+
+  // Make an AJAX request and call the callback function
+  function makeAjaxRequest(url, headers, params, callback, columns) {
+    $.ajax({
+      url: url,
+      method: 'GET',
+      data: params,
+      headers: headers,
+      success: callback,
+      error: function (err) {
+        console.error('Error fetching data:', err);
+        if (err.status == 401) {
+          const responseJSON = err.responseJSON;
+          toastr.error(responseJSON.message);
+          setTimeout(function () {
+            window.location.href = '{{baseUrl}}admin/login';
+          }, 2000);
+        } else {
+          const responseJSON = err.responseJSON;
+          toastr.error(responseJSON.message);
+        }
+      }
+    });
+  }
+
+  function setDataType(type, columns) {
+    dataType = type;
+    $('#page-title').text(`${type.charAt(0).toUpperCase() + type.slice(1)} List`);
+    fetchData(currentPage, search = '', columns, limit);
+  }
+
+  // Delete Part 
+  function makeAjaxRequestDelete(url, headers, params) {
+    $.ajax({
+      url: url,
+      method: 'DELETE',
+      data: params,
+      headers: headers,
+      success: function (response) {
+        toastr.clear();
+        toastr.success("Item deleted successfully!", "Success");
+        setTimeout(function () {
+          window.location.reload();
+        }, 2000);
+      },
+      error: function (err) {
+        console.error('Error fetching data:', err);
+
+        // Handle authentication errors
+        if (err.status === 403 || err.status === 401) {
+          toastr.error('Authentication failed, please login again!');
+          setTimeout(function () {
+            window.location.href = '{{baseUrl}}admin/login';
+          }, 2000);
+        } else {
+          toastr.error('An error occurred. Please try again.');
+        }
+      }
+    });
+  }
+
+  function showConfirmationPopup(element) {
+    const toastr1 = {
+      "closeButton": false,
+      "debug": false,
+      "newestOnTop": true,
+      "progressBar": false,
+      "positionClass": "toast-top-center",
+      "preventDuplicates": true,
+      "timeOut": 0,
+      "extendedTimeOut": 0
+    };
+
+
+    function applyToastrConfig(config) {
+      toastr.options = config;
+    }
+
+    applyToastrConfig(toastr1);
+    toastr.clear();
+
+    const confirmationHtml = `
+      <div class="toast-confirmation">
+        <p>Are you sure you want to delete this?</p>
+        <button class="btn-yes" id="confirmDelete">Yes</button>
+        <button class="btn-no" id="cancelDelete">No</button>
+      </div>
+    `;
+
+    toastr.warning(confirmationHtml, "Confirm Delete", {
+      allowHtml: true,
+      onShown: function () {
+        document.getElementById('confirmDelete').addEventListener('click', function () {
+          handleDeleteConfirmed(element);
+        });
+        document.getElementById('cancelDelete').addEventListener('click', function () {
+          toastr.clear();
+        });
+      }
+    });
+  }
+  function statuschange_appointment(appointmentToken) {
+    $("#appointmentTokenInput").val(appointmentToken);
+    $("#editAppointmentModal").show();
+  }
+
+
+
+  function handleDeleteConfirmed(element) {
+    toastr.clear();
+
+    const params = {
+      id: element
+    };
+    const token = localStorage.getItem('jwtToken');
+    const headers = token ? {
+      'Authorization': `Bearer ${token}`,
+    } : {};
+    const url = `${baseUrl}api/${dataType}/delete`;
+    makeAjaxRequestDelete(url, headers, params);
+  }
+
+
+
+</script>
+<div class="modal" id="editAppointmentModal" tabindex="-1" role="dialog" aria-labelledby="editAppointmentModal">
+  <div class="modal-dialog modal-dialog-centered modal-min" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <i class="flaticon-secure-shield d-block"></i>
+        <h1>Update Status</h1>
+        
+        <form method="post">
+          <div class="ms-form-group has-icon">
+            <select class="form-control" name="status" id="status">
+              <option value="">Select Status</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+          <div class="ms-form-group has-icon">
+            <input type="hidden" class="form-control" name="appointmentToken" id="appointmentTokenInput">
+            <textarea class="form-control" placeholder="Notes....." name="notes" id="notes"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary shadow-none">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+
+</html>

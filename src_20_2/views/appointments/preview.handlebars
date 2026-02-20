@@ -1,0 +1,226 @@
+{{> header}}
+<!-- Main Content -->
+<main class="body-content">
+    <div class="ms-content-wrapper">
+        <div class="row">
+            <!-- Orders Table Expanded -->
+            <div class="col-md-6">
+                <div class="ms-panel">
+                    <div class="ms-panel-header row ms-panel-custom">
+                        <a>
+                            <h6> Appointments Details</h6>
+                        </a>
+                        {{!-- <a href="{{baseUrl}}admin/add-appointments"
+                            class="btn btn-pill btn-primary text-right">Add appointments</a>
+                        --}}
+                    </div>
+                    <div class="ms-panel-body">
+                        <div class="table-responsive">
+                            {{!-- <div class="mb-3 main-search d-flex align-items-end justify-content-between">
+                                <div class="dataTables_length" id="data-table-8_length">
+                                    <label>Show </label>
+                                    <select name="data-table-8_length" aria-controls="data-table-8"
+                                        class="custom-select form-control form-control-sm" id="limit">
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="200">200</option>
+                                        <option value="500">500</option>
+                                    </select>
+
+                                </div>
+                                <div id="data-table-8_filter" class="dataTables_filter"><label></label>
+                                    <input type="text" id="search" class="form-control search"
+                                        placeholder="Search by title">
+                                    </label>
+                                </div>
+                            </div> --}}
+                            <table id="data-table" class="table table-striped thead-primary w-100">
+                                <tbody>
+                                     
+
+                                </tbody>
+                                <tbody>
+                                </tbody>
+                            </table> 
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+             <div class="col-md-6">
+                <div class="ms-panel">
+                    <div class="ms-panel-header row ms-panel-custom">
+                        <a>
+                            <h6> Appointments Payment History</h6>
+                        </a>
+                    </div>
+                    <div class="ms-panel-body">
+                        <div class="table-responsive">
+                            <table id="data-table1" class="table table-striped thead-primary w-100">
+                                <tbody> 
+                                </tbody>
+                                <tbody>
+                                </tbody>
+                            </table> 
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+{{> footer}}
+<script>
+    function makeAjaxRequestGET(url, headers, params) {
+        $.ajax({
+            url: url,
+            method: 'GET',
+            data: params,
+            headers: headers,
+            success: function (response) {
+                toastr.clear();
+                renderTable1(response.data, columns);
+                renderTable(response.appointmentPaymentDetails, columns1);
+            },
+            error: function (err) {
+                console.error('Error fetching data:', err);
+
+                // Handle authentication errors
+                if (err.status === 403 || err.status === 401) {
+                    toastr.error('Authentication failed, please login again!');
+                    setTimeout(function () {
+                        window.location.href = '{{baseUrl}}admin/login';
+                    }, 2000);
+                } else {
+                    toastr.error('An error occurred. Please try again.');
+                }
+            }
+        });
+    }
+    const token = localStorage.getItem('jwtToken');
+    const headers = token
+        ? {
+            'Authorization': `Bearer ${token}`,
+        }
+        : {};
+    const params = { id: `{{appointmentToken}}` };
+    const url = `${baseUrl}api/appointments/appointment_deatails`;
+    makeAjaxRequestGET(url, headers, params);
+    let columns = [
+        { field: 'name', label: 'Name' },
+        { field: 'email', label: 'Email' },
+        { field: 'phone', label: 'Phone' },
+        { field: 'mode_consultation', label: 'Mode Consultation' },
+        { field: 'purpose', label: 'purpose' },
+        { field: 'age', label: 'Age' },
+        { field: 'gender', label: 'Gender' },
+        { field: 'appointment_date', label: 'Appointment Date' },
+        { field: 'appointment_time', label: 'Appointment Time' },
+        { field: 'payment_status', label: 'PaymentStatus!' },
+        { field: 'payment_id', label: 'Payment ID' },
+        { field: 'createdAt', label: 'createdAt' },
+        // Special field for actions
+    ];
+
+      let columns1 = [
+        { field: 'order_id', label: 'Order Id' },
+         { field: 'receipt', label: 'Receipt' },
+        { field: 'createdAt', label: 'createdAt' },
+        { field: 'status', label: 'Payment Status' },
+        { field: 'payment_id', label: 'Payment ID' },
+        // Special field for actions
+    ];
+
+    function renderTable1(data, columns) {
+        const table = $('#data-table');
+        const tbody = $('<tbody>');
+
+        if (data.length > 0) {
+            data.forEach(item => {
+                const rows = createDataRow1(item, columns);
+                tbody.append(rows);
+            });
+        } else {
+            tbody.append(`<h6 class="text-center mt-3">No Records Found!</h6>`);
+        }
+
+        table.empty();
+        table.append(tbody);
+    }
+
+    function createDataRow1(item, columns) {
+        const fragment = $(document.createDocumentFragment());
+
+        columns.forEach(column => {
+            const row = $('<tr>');
+
+            // First cell: Column label
+            row.append(`<td><strong>${column.label}</strong></td>`);
+
+            // Second cell: Corresponding value
+            let cellContent = item[column.field] || 'N/A'; // Handle missing values
+
+            if (column.field === 'payment_status') {
+                const paymentUrl = `{{baseUrl}}appointment_pay?token=${item.appointmentToken}`;
+                const paymentBtn = `<a href="${paymentUrl}" class="btn btn-success">Pay Now</a>`;
+                const successText = `<a href="#" class="text text-success">${item[column.field]}</a>`;
+                const copyBtn = `
+                <button class="btn btn-primary ms-2" onclick="copyToClipboard('${paymentUrl}')">
+                    <i class="fas fa-copy"></i> Payment Copy Link
+                </button>`;
+
+                cellContent = item[column.field] !== 'success' ? paymentBtn : successText;
+            }
+
+            row.append(`<td>${cellContent}</td>`);
+
+            fragment.append(row);
+        });
+
+        return fragment;
+    }
+
+  
+
+  function renderTable(data, columns) {
+    const table = $('#data-table1');
+    const thead = $('<thead>');
+    const tbody = $('<tbody>');
+
+    // Generate thead dynamically based on columns
+    const headerRow = $('<tr>');
+    columns.forEach(column => {
+      headerRow.append(`<th>${column.label}</th>`);
+    });
+    thead.append(headerRow);
+
+    // Generate tbody dynamically based on data
+    if (data.length > 0) {
+      data.forEach(item => {
+        const row = createDataRow(item, columns);
+        tbody.append(row);
+      });
+    } else {
+      tbody.append(`<h6 class="text-center mt-3"> No Records Founds!</h6>`);
+    }
+
+    table.empty();
+    table.append(thead);
+    table.append(tbody);
+  }
+  function createDataRow(item, columns) {
+    const row = $('<tr>');
+
+    columns.forEach(column => {
+        row.append(`<td>${item[column.field]??'N/A'}</td>`); 
+    });
+
+    return row;
+  }
+
+
+</script>
